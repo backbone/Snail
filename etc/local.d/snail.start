@@ -1,0 +1,3 @@
+# /etc/conf.d/local.start
+
+snail.nv_pwr_off

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+LOCK_FILE=/tmp/.snail.nvrun.lock
+
+(
+	flock -n 9
+
+	if [ 0 -ne $? ]; then
+		echo "Cann't lock $COUNT_FILE. Exiting..."
+		exit -1
+	fi
+
+	snail.nvstat || snail.nvon
+
+	if [ 0 -ne $? ]; then
+		echo "Cann't switch on nVidia graphics. Exiting..."
+		exit -1
+	fi
+
+) 9>$LOCK_FILE || exit $?
+
+snail.nvrun "$@"
+
+(
+	flock -n 9
+
+	if [ 0 -ne $? ]; then
+		echo "Cann't lock $COUNT_FILE. Exiting..."
+		exit -1
+	fi
+
+	pgrep snail.nvrun &>/dev/null
+
+	if [ 0 -eq $? ]; then
+		echo "Other applications still use nVidia chip. So we aren't switching off it, just exiting..."
+		exit 0
+	else
+		snail.nvoff
+		[ 0 -ne $? ] && echo "Error: Cann't switch off nVidia graphics. Exiting..." && exit -1
+		echo "nVidia chip powered off."
+		exit 0
+	fi
+
+) 9>$LOCK_FILE
+
+exit $?
+

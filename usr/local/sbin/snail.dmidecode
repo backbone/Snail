@@ -1,0 +1,4 @@
+#!/bin/sh
+
+dmidecode $@ -s system-product-name
+

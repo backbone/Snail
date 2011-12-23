@@ -1,0 +1,26 @@
+#!/sbin/runscript
+
+DAEMON=/usr/bin/X
+DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/local/lib/snail -nolisten tcp -noreset :1 vt9"
+PIDFILE=/tmp/.X1-lock
+
+depend() {
+	need xdm
+}
+
+start() {
+	ebegin "Starting bumblebee nVidia Optimus"
+	snail.nv_pwr_on || eend -1
+	! ps -p `cat $PIDFILE 2>&1` > /dev/null 2>&1 || eend -1
+	export LD_LIBRARY_PATH=/usr/lib/opengl/nvidia/lib:/usr/lib/opengl/nvidia/lib
+	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping bumblebee nVidia Optimus"
+	kill `cat $PIDFILE 2>&1` > /dev/null 2>&1 ; sleep 1 ; kill -9 `cat $PIDFILE 2>&1` > /dev/null 2>&1
+	snail.nv_pwr_off || eend -1
+	eend $result
+}
+

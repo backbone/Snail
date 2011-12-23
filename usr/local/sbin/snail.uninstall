@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Tell the system to use both xorg-x11 OpenGL and GLX libraries
+eselect opengl set xorg-x11
+
+# Restore xorg.conf.* files from backups
+[ -f /etc/X11/xorg.conf.snail-bkp ] && rm -f /etc/X11/xorg.conf && mv /etc/X11/xorg.conf.snail-bkp /etc/X11/xorg.conf
+[ -f /etc/X11/xorg.conf.intel.snail-bkp ] && rm -f /etc/X11/xorg.conf.intel && mv /etc/X11/xorg.conf.intel.snail-bkp /etc/X11/xorg.conf.intel
+[ -f /etc/X11/xorg.conf.nvidia.snail-bkp ] && rm -f /etc/X11/xorg.conf.nvidia && mv /etc/X11/xorg.conf.nvidia.snail-bkp /etc/X11/xorg.conf.nvidia
+
+# Remove backup files
+for f in "" .intel .nvidia ; do
+	rm -f /etc/X11/xorg.conf${f}.snail-bkp
+done
+
+# Remove records in sudoers
+sed -i '/snail/d' /etc/sudoers
+

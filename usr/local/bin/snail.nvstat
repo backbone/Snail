@@ -1,0 +1,11 @@
+#!/bin/sh
+
+[ -f /tmp/.X1-lock ] &&  pgrep -s `cat /tmp/.X1-lock` &>/dev/null
+
+let status=$?
+
+[ 0 -eq $status ] && echo "nVidia graphics is ACTIVE" \
+                  || echo "nVidia graphics is NOT ACTIVE"
+
+exit $status
+
