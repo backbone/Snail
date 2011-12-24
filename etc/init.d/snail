@@ -14,7 +14,9 @@ start() {
 	! ps -p `cat $PIDFILE 2>&1` > /dev/null 2>&1 || eend -1
 	export LD_LIBRARY_PATH=/usr/lib/opengl/nvidia/lib:/usr/lib/opengl/nvidia/lib
 	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
-	eend $?
+	status=$?
+	(snail.autostop &>/dev/null)&
+	eend $status
 }
 
 stop() {

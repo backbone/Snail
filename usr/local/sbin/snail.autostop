@@ -1,0 +1,35 @@
+#!/bin/sh
+
+LOCK_FILE=/tmp/.snail.nvrun.lock
+NVRUN=/usr/local/bin/nvrun
+
+while [ 1 ]; do
+	pgrep -f $NVRUN &>/dev/null
+
+	if [ 0 -ne $? ]; then
+
+		(
+		for i in `seq 16`; do
+			flock -n 9
+	
+			if [[ 0 -ne $? && 5 -eq $i ]]; then
+				echo "Cann't lock $COUNT_FILE. Exiting..."
+				exit -1
+	
+			elif [ 0 -eq $? ]; then
+				break
+			fi
+	
+			sleep 1
+		done
+
+		snail.nvoff
+		[ 0 -ne $? ] && echo "Error: Cann't switch off nVidia graphics. Exiting..." && exit -1
+		echo "nVidia chip powered off."
+		exit 0
+		) 9>$LOCK_FILE ; exit $?
+	fi
+
+	sleep 1
+done
+

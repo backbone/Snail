@@ -1,14 +1,22 @@
 #!/bin/sh
 
 LOCK_FILE=/tmp/.snail.nvrun.lock
+NVRUN=/usr/local/bin/nvrun
 
 (
-	flock -n 9
+	for i in `seq 8`; do
+		flock -n 9
 
-	if [ 0 -ne $? ]; then
-		echo "Cann't lock $COUNT_FILE. Exiting..."
-		exit -1
-	fi
+		if [[ 0 -ne $? && 5 -eq $i ]]; then
+			echo "Cann't lock $COUNT_FILE. Exiting..."
+			exit -1
+
+		elif [ 0 -eq $? ]; then
+			break
+		fi
+
+		sleep 1
+	done
 
 	snail.nvstat || snail.nvon
 
@@ -22,14 +30,21 @@ LOCK_FILE=/tmp/.snail.nvrun.lock
 snail.nvrun "$@"
 
 (
-	flock -n 9
+	for i in `seq 8`; do
+		flock -n 9
 
-	if [ 0 -ne $? ]; then
-		echo "Cann't lock $COUNT_FILE. Exiting..."
-		exit -1
-	fi
+		if [[ 0 -ne $? && 5 -eq $i ]]; then
+			echo "Cann't lock $COUNT_FILE. Exiting..."
+			exit -1
 
-	pgrep snail.nvrun &>/dev/null
+		elif [ 0 -eq $? ]; then
+			break
+		fi
+
+		sleep 1
+	done
+
+	pgrep -f $NVRUN &>/dev/null
 
 	if [ 0 -eq $? ]; then
 		echo "Other applications still use nVidia chip. So we aren't switching off it, just exiting..."
