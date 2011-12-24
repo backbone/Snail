@@ -9,17 +9,19 @@ while [ 1 ]; do
 	if [ 0 -ne $? ]; then
 
 		(
-		for i in `seq 16`; do
+		for i in `seq 32`; do
 			flock -n 9
+			status=$?
 	
-			if [[ 0 -ne $? && 5 -eq $i ]]; then
+			if [[ 0 -ne $status && 5 -eq $i ]]; then
 				echo "Cann't lock $COUNT_FILE. Exiting..."
 				exit -1
 	
-			elif [ 0 -eq $? ]; then
+			elif [ 0 -eq $status ]; then
 				break
 			fi
 	
+			echo sleep 1
 			sleep 1
 		done
 
@@ -30,6 +32,7 @@ while [ 1 ]; do
 		) 9>$LOCK_FILE ; exit $?
 	fi
 
+	echo sleep 1
 	sleep 1
 done
 

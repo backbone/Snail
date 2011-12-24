@@ -4,17 +4,19 @@ LOCK_FILE=/tmp/.snail.nvrun.lock
 NVRUN=/usr/local/bin/nvrun
 
 (
-	for i in `seq 8`; do
+	for i in `seq 16`; do
 		flock -n 9
+		status=$?
 
-		if [[ 0 -ne $? && 5 -eq $i ]]; then
+		if [[ 0 -ne $status && 5 -eq $i ]]; then
 			echo "Cann't lock $COUNT_FILE. Exiting..."
 			exit -1
 
-		elif [ 0 -eq $? ]; then
+		elif [ 0 -eq $status ]; then
 			break
 		fi
 
+		echo sleep 1
 		sleep 1
 	done
 
@@ -30,17 +32,19 @@ NVRUN=/usr/local/bin/nvrun
 snail.nvrun "$@"
 
 (
-	for i in `seq 8`; do
+	for i in `seq 16`; do
 		flock -n 9
+		status=$?
 
-		if [[ 0 -ne $? && 5 -eq $i ]]; then
+		if [[ 0 -ne $status && 5 -eq $i ]]; then
 			echo "Cann't lock $COUNT_FILE. Exiting..."
 			exit -1
 
-		elif [ 0 -eq $? ]; then
+		elif [ 0 -eq $status ]; then
 			break
 		fi
 
+		echo sleep 1 aaa
 		sleep 1
 	done
 

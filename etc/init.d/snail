@@ -21,7 +21,7 @@ start() {
 
 stop() {
 	ebegin "Stopping bumblebee nVidia Optimus"
-	kill `cat $PIDFILE 2>&1` > /dev/null 2>&1 ; sleep 1 ; kill -9 `cat $PIDFILE 2>&1` > /dev/null 2>&1
+	kill `cat $PIDFILE 2>&1` > /dev/null 2>&1
 	snail.nv_pwr_off || eend -1
 	eend $result
 }
