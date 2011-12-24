@@ -1,7 +1,7 @@
 #!/bin/sh
 
 LOCK_FILE=/tmp/.snail.nvrun.lock
-NVRUN=/usr/local/bin/nvrun
+NVRUN=snail.nvrun
 
 (
 	for i in `seq 16`; do
@@ -16,7 +16,6 @@ NVRUN=/usr/local/bin/nvrun
 			break
 		fi
 
-		echo sleep 1
 		sleep 1
 	done
 
@@ -44,11 +43,10 @@ snail.nvrun "$@"
 			break
 		fi
 
-		echo sleep 1 aaa
 		sleep 1
 	done
 
-	pgrep -f $NVRUN &>/dev/null
+	pgrep $NVRUN &>/dev/null
 
 	if [ 0 -eq $? ]; then
 		echo "Other applications still use nVidia chip. So we aren't switching off it, just exiting..."

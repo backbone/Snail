@@ -1,10 +1,10 @@
 #!/bin/sh
 
 LOCK_FILE=/tmp/.snail.nvrun.lock
-NVRUN=/usr/local/bin/nvrun
+NVRUN=nvrun
 
 while [ 1 ]; do
-	pgrep -f $NVRUN &>/dev/null
+	pgrep "$NVRUN" &>/dev/null
 
 	if [ 0 -ne $? ]; then
 
@@ -21,7 +21,6 @@ while [ 1 ]; do
 				break
 			fi
 	
-			echo sleep 1
 			sleep 1
 		done
 
@@ -32,7 +31,6 @@ while [ 1 ]; do
 		) 9>$LOCK_FILE ; exit $?
 	fi
 
-	echo sleep 1
 	sleep 1
 done
 

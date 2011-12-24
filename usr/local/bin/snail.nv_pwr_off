@@ -2,7 +2,7 @@
 
 model=`sudo snail.dmidecode`
 
-let retry=5
+let retry=8
 while [ $retry -ne 0 ]; do
 
 	case "$model" in
