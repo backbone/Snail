@@ -1,63 +1,10 @@
-Section "ServerLayout"
-	Identifier     "Layout0"
-EndSection
-
-Section "Module"
-	Disable "dri"
-	Disable "dri2"
-	Load  "dbe"
-	Load  "extmod"
-	Load  "glx"
-	Load  "record"
-	Load  "freetype"
-	Load  "type1"
-EndSection
-
 Section "Device"
 	Identifier     "Device1"
 	Driver         "nvidia"
-	VendorName     "NVIDIA Corporation"
 	BusID          "BusIDNvidia"
-	Option         "IgnoreEDID" "False"
-	Option         "UseEDID" "FALSE"
-	Option         "NoDDC" "True"
-	Option         "ConnectedMonitor" "CRT-0"
-
-	Option         "AllowDDCCI" "True"
-	Option         "AllowDFPStereo" "True"
-	Option         "AllowGLXWithComposite" "False"
-	Option         "NoBandWidthTest" "False"
-	Option         "ConnectToAcpid" "True"
-	Option         "ConstantDPI" "True"
-	# Option         "Dac8Bit" "True"
-	Option         "DisableGLXRootClipping" "True"
-	Option         "DamageEvents" "True"
-	Option         "ExactModeTimingsDVI" "True"
-	Option         "NoFlip" "False"
-	Option         "ForceStereoFlipping" "True"
-	Option         "IncludeImplicitMetaModes" "True"
-	Option         "NoLogo" "True"
-	Option         "MultisampleCompatibility" "True"
-	Option         "Overlay" "True"
-	Option         "CIOverlay" "True"
-	Option         "OverlayDefaultVisual" "True"
-	Option         "RandRRotation" "True"
-	Option         "NoRenderExtension" "False"
-	Option         "RenderAccel" "True"
-	Option         "AddARGBGLXVisuals" "True"
-	Option         "CoolBits" "1"
-	# Battery settings:
-	Option  "RegistryDwords" "PowerMizerLevel=0x3"
-	# auto perf depend on temp
-	Option "RegistryDwords" "PerfLevelSrc=0x3333"
 EndSection
 
 Section "Extensions"
-	Option "Composite" "Disable"
-	Option "RENDER" "Enable"
+	Option         "Composite" "Disable" # Must be always disabled on secondary video chip
+	Option         "RENDER" "Enable"
 EndSection
-
-Section "ServerFlags"
-	Option	"AllowEmptyInput" "yes"
-EndSection
-

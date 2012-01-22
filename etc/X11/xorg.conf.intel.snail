@@ -1,17 +1,3 @@
-Section "Module"
-	Load  "GLcore"
-	Load  "dbe"
-	Load  "dri"
-	Load  "dri2"
-	Load  "freetype"
-	Load  "ddc"
-	Load  "extmod"
-	Load  "int10"
-	Load  "vbe"
-	Load  "dbe"
-	Load  "glx"
-EndSection
-
 Section "Files"
 	FontPath "/usr/share/fonts/misc:unscaled"
 	FontPath "/usr/share/fonts/75dpi:unscaled"
@@ -34,11 +20,10 @@ EndSection
 Section "Device"
     Identifier     "Device0"
     Driver         "intel"
-    VendorName     "onboard"
     BusID          "BusIDIntel"
 EndSection
 
 Section "Extensions"
-        Option        "Composite"     "Disable"
+        Option        "Composite"     "Disable"	# Enable in case you are using Compiz
         Option        "RENDER"        "Enable"
 EndSection
