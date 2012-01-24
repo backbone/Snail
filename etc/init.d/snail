@@ -15,6 +15,7 @@ start() {
 	export LD_LIBRARY_PATH=/usr/lib/opengl/nvidia/lib:/usr/lib/opengl/nvidia/lib
 	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
 	status=$?
+	for i in `seq 3`; do snail.nvstat >/dev/null && break; sleep 1; done
 	(nohup snail.autostop &>/dev/null)&
 	eend $status
 }
