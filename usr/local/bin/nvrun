@@ -4,7 +4,8 @@ LOCK_FILE=/tmp/.snail.nvrun.lock
 NVRUN=snail.nvrun
 
 (
-	for i in `seq 16`; do
+        let i=16
+        while [ 0 -lt $i ]; do
 		flock -n 9
 		status=$?
 
@@ -16,7 +17,8 @@ NVRUN=snail.nvrun
 			break
 		fi
 
-		sleep 1
+                sleep 0.01
+                let i--
 	done
 
 	snail.nvstat || snail.nvon
@@ -31,7 +33,8 @@ NVRUN=snail.nvrun
 snail.nvrun "$@"
 
 (
-	for i in `seq 16`; do
+        let i=16
+        while [ 0 -lt $i ]; do
 		flock -n 9
 		status=$?
 
@@ -43,7 +46,8 @@ snail.nvrun "$@"
 			break
 		fi
 
-		sleep 1
+                sleep 0.01
+                let i--
 	done
 
 	pgrep $NVRUN &>/dev/null

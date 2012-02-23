@@ -3,7 +3,7 @@
 model=`sudo snail.dmidecode`
 
 let retry=8
-while [ $retry -ne 0 ]; do
+while [ 0 -lt $retry ]; do
 
 	case "$model" in
 		M11XR2)
@@ -86,9 +86,9 @@ while [ $retry -ne 0 ]; do
 		;;
 	esac
 
+	sleep 0.01
 	let retry--
-	sleep 1
-	echo "retry $retry"
+	echo "retry countdown: $retry"
 done
 
 exit -1
