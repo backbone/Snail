@@ -2,7 +2,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
-TIMEOUT=5           # wait timeout for X server start
+TIMEOUT=10           # wait timeout for X server start
 let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 
 SERVICE=/etc/init.d/snail-xserver
@@ -13,7 +13,7 @@ FIFO_FILE=/tmp/.snail.fifo
 
 
 {
-  echo -n >$FIFO_FILE
+  echo -n > $FIFO_FILE &
   flock -w $TIMEOUT -s 9
 
   if [ 0 -eq $? ]; then
@@ -27,4 +27,6 @@ FIFO_FILE=/tmp/.snail.fifo
 	echo "Application $@ was performed on Intel"
   fi
 
-} 9 > $LOCK_FILE
+  flock -u 9
+
+} 9>$LOCK_FILE
