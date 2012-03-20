@@ -1,6 +1,6 @@
 #!/bin/sh
 
-model=`sudo snail.dmidecode`
+model=`dmidecode $@ -s system-product-name`
 
 let retry=8
 while [ 0 -lt $retry ]; do

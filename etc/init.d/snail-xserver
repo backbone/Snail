@@ -15,9 +15,13 @@ start() {
 	export LD_LIBRARY_PATH=/usr/lib/opengl/nvidia/lib:/usr/lib/opengl/nvidia/lib
 	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
 	status=$?
+	# FIXME: remove --background flag and next cycle
         let i=300
-        while [ 0 -lt $i ]; do snail.nvstat >/dev/null && break; sleep 0.01; let i--; done
-	(nohup snail.autostop &>/dev/null)&
+        while [ 0 -lt $i ]; do
+		[ -f $PIDFILE ] && pgrep -s `cat $PIDFILE` &>/dev/null && break
+		sleep 0.01
+		let i--
+	done
 	eend $status
 }
 
@@ -27,4 +31,3 @@ stop() {
 	snail.nv_pwr_off || eend -1
 	eend $result
 }
-

@@ -1,68 +1,30 @@
-#!/bin/sh
+#!/bin/bash
 
-LOCK_FILE=/tmp/.snail.nvrun.lock
-NVRUN=snail.nvrun
+PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
-(
-        let i=16
-        while [ 0 -lt $i ]; do
-		flock -n 9
-		status=$?
+TIMEOUT=5           # wait timeout for X server start
+let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 
-		if [[ 0 -ne $status && 5 -eq $i ]]; then
-			echo "Cann't lock $COUNT_FILE. Exiting..."
-			exit -1
+SERVICE=/etc/init.d/snail-xserver
+PROC=nvrun
 
-		elif [ 0 -eq $status ]; then
-			break
-		fi
+LOCK_FILE=/tmp/.snail.lock
+FIFO_FILE=/tmp/.snail.fifo
 
-                sleep 0.01
-                let i--
-	done
 
-	snail.nvstat || snail.nvon
+{
+  echo -n >$FIFO_FILE
+  flock -w $TIMEOUT -s 9
 
-	if [ 0 -ne $? ]; then
-		echo "Cann't switch on nVidia graphics. Exiting..."
-		exit -1
-	fi
+  if [ 0 -eq $? ]; then
+	echo "Running $@ on nVidia"
+	LD_PRELOAD="/usr/lib/opengl/nvidia/lib/libGL.so:/usr/lib/opengl/nvidia/lib/libnvidia-tls.so" snail.vglrun -d :1 "$@"
+	echo "Application $@ was performed on nVidia"
 
-) 9>$LOCK_FILE || exit $?
+  elif [ 0 -ne $INTEL_IF_FAIL ]; then
+	echo "Running $@ on Intel"
+	"$@"
+	echo "Application $@ was performed on Intel"
+  fi
 
-snail.nvrun "$@"
-
-(
-        let i=16
-        while [ 0 -lt $i ]; do
-		flock -n 9
-		status=$?
-
-		if [[ 0 -ne $status && 5 -eq $i ]]; then
-			echo "Cann't lock $COUNT_FILE. Exiting..."
-			exit -1
-
-		elif [ 0 -eq $status ]; then
-			break
-		fi
-
-                sleep 0.01
-                let i--
-	done
-
-	pgrep $NVRUN &>/dev/null
-
-	if [ 0 -eq $? ]; then
-		echo "Other applications still use nVidia chip. So we aren't switching off it, just exiting..."
-		exit 0
-	else
-		snail.nvoff
-		[ 0 -ne $? ] && echo "Error: Cann't switch off nVidia graphics. Exiting..." && exit -1
-		echo "nVidia chip powered off."
-		exit 0
-	fi
-
-) 9>$LOCK_FILE
-
-exit $?
-
+} 9 > $LOCK_FILE
