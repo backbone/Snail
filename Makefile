@@ -10,12 +10,12 @@ install:
 	install sbin/* ${PREFIX}/sbin
 	install lib64/*.so ${PREFIX}/lib64
 	install -d ${PREFIX}/lib64/snail
-	ln -sf /usr/lib64/opengl/nvidia/extensions ${PREFIX}/lib64/snail/extensions
+	ln -sf /usr/lib64/opengl/nvidia/extensions ${PREFIX}/lib64/snail
 	install -d ${PREFIX}/lib64/snail/modules
-	ln -sf /usr/lib64/xorg/modules/drivers ${PREFIX}/lib64/snail/modules/drivers
-	ln -sf /usr/lib64/xorg/modules/extensions ${PREFIX}/lib64/snail/modules/extensions
-	ln -sf /usr/lib64/xorg/modules/libfb.so ${PREFIX}/lib64/snail/modules/libfb.so
-	ln -sf /usr/lib64/xorg/modules/libwfb.so ${PREFIX}/lib64/snail/modules/libwfb.so
+	ln -sf /usr/lib64/xorg/modules/drivers ${PREFIX}/lib64/snail/modules
+	ln -sf /usr/lib64/xorg/modules/extensions ${PREFIX}/lib64/snail/modules
+	ln -sf /usr/lib64/xorg/modules/libfb.so ${PREFIX}/lib64/snail/modules
+	ln -sf /usr/lib64/xorg/modules/libwfb.so ${PREFIX}/lib64/snail/modules
 
 uninstall:
 	rm -f /etc/X11/xorg.conf.*.snail

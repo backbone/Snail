@@ -81,6 +81,8 @@ if [ "gentoo" == "$DISTRIB_ID" ]; then
   eselect rc delete snail-xserver boot default
   eselect rc delete snail-watcher boot
   eselect rc add snail-watcher default
+  eselect rc stop snail-xserver
+  eselect rc start snail-watcher
 elif [ "fedora" == "$DISTRIB_ID" ]; then
   echo ""
 else
