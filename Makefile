@@ -4,7 +4,7 @@ PREFIX = /usr/local
 all:
 
 install:
-	install etc/X11/* /etc/X11
+	install --mode=644 etc/X11/* /etc/X11
 	install etc/init.d/* /etc/init.d
 	install bin/* ${PREFIX}/bin
 	install sbin/* ${PREFIX}/sbin
