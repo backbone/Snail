@@ -1,6 +1,4 @@
-#!/bin/sh
-
-PREFIX=/usr/local
+#!/bin/bash
 
 # Tell the system to use xorg-x11 OpenGL libraries and nVidia GLX extensions
 eselect opengl set xorg-x11
