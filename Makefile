@@ -28,4 +28,4 @@ uninstall:
 	rm -f ${PREFIX}/bin/snail.vglrun
 	rm -f ${PREFIX}/sbin/snail.nv_pwr_off
 	rm -f ${PREFIX}/sbin/snail.nv_pwr_on
-	rm -f ${PREFIX}/sbin/snail.watcher.sh
+	rm -f ${PREFIX}/sbin/snail-watcher.sh
