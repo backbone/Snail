@@ -1,0 +1,118 @@
+#!/bin/bash
+
+echo "Test for nVidia driver"
+lsmod | grep '^nvidia ' &>/dev/null
+[ 0 -ne $? ] && snail.nv_pwr_on && modprobe nvidia ; snail.nv_pwr_off
+if [ 0 -eq $? ]; then
+  echo "nVidia driver is OK! ;-)"
+  modprobe -r nvidia
+else
+  echo "You must install standart nVidia driver first!"
+  exit -1
+fi
+
+echo "Test for acpi_call module..."
+lsmod | grep '^acpi_call ' &>/dev/null
+if [ 0 -eq $? ]; then
+  echo "acpi_call is OK! ;-)"
+else
+  modprobe acpi_call && lsmod | grep '^acpi_call ' &>/dev/null
+  if [ 0 -eq $? ]; then
+    modprobe -rf acpi_call
+    echo "Please configure acpi_call module for autoloading on system start and try again!"
+    exit -1
+  else
+    echo "acpi_call kernel module not found, please install it!"
+    exit -1
+  fi
+fi
+
+echo "Test for dmidecode utility..."
+dmidecode &>/dev/null
+if [ 0 -eq $? ]; then
+  echo "dmidecode utility is OK! ;-)"
+else
+  echo "Please install dmidecode and run the script as root again."
+fi
+
+echo "Detecting your distribution..."
+DISTRIB_ID=
+DISTRIB_DESCRIPTION=
+DISTRIB_RELEASE=
+DISTRIB_CODENAME=
+if [ -f /etc/gentoo-release ]; then
+  DISTRIB_ID=gentoo
+  DISTRIB_DESCRIPTION=`cat /etc/gentoo-release`
+  DISTRIB_RELEASE=${DISTRIB_DESCRIPTION##* }
+  DISTRIB_CODENAME=gentoo
+elif [ -f /etc/debian-version ]; then
+  DISTRIB_ID=debian
+  DISTRIB_CODENAME=`cut -d'/' /etc/debian-version -f1`
+elif [ -f /etc/slax-version ]; then
+  DISTRIB_ID=slax
+  DISTRIB_DESCRIPTION=`cat /etc/slax-version`
+elif [ -f /etc/arch-release ]; then
+  DISTRIB_ID=arch
+  DISTRIB_DESCRIPTION=`cat /etc/arch-release`
+elif [ -f /etc/slackware-version ]; then
+  DISTRIB_ID=slackware
+  DISTRIB_DESCRIPTION=`cat /etc/slackware-version`
+elif [ `which lsb_release` ]; then
+  DISTRIB_ID=`lsb_release | grep '^Distributor' | sed 's~[^:]*:~~' | tr 'A-Z' 'a-z'`
+  DISTRIB_DESCRIPTION=`lsb_release | grep '^Description' | sed 's~[^:]*:~~'`
+  DISTRIB_RELEASE=`lsb_release | grep '^Release' | sed 's~[^:]*:~~'`
+  DISTRIB_CODENAME=`lsb_release | grep '^Codename' | sed 's~[^:]*:~~'`
+elif [ -f /etc/os-release ]; then
+  DISTRIB_ID=`grep '^ID=' /etc/os-release | cut -d'=' -f2`
+  DISTRIB_DESCRIPTION=`grep '^PRETTY_NAME=' /etc/os-release | cut -d'=' -f2`
+  DISTRIB_RELEASE=`grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2`
+  DISTRIB_CODENAME=`grep '^NAME=' /etc/os-release | cut -d'=' -f2`
+else
+  DISTRIB_DESCRIPTION=`cat /etc/*release* | head -n1`
+  DISTRIB_ID=`echo ${DISTRIB_DESCRIPTION%% *} | tr 'A-Z' 'a-z'`
+  DISTRIB_RELEASE=`echo ${DISTRIB_DESCRIPTION%% *} | sed 's~[^0-9]\+\([0-9\.]\+\).*~\1~'`
+  DISTRIB_CODENAME=$DISTRIB_ID
+fi
+[ "" == "$DISTRIB_ID" ] && echo 'GNU/Linux distribution not recognized, sorry! Please post a bug!' && exit -1
+echo 'Detected distribution:'
+echo "DISTRIB_ID=$DISTRIB_ID"
+echo "DISTRIB_DESCRIPTION=$DISTRIB_DESCRIPTION"
+echo "DISTRIB_RELEASE=$DISTRIB_RELEASE"
+echo "DISTRIB_CODENAME=$DISTRIB_CODENAME"
+
+echo "Configuring OpenGL libraries and nVidia GLX extensions"
+if [ "gentoo" == "$DISTRIB_ID" ]; then
+  eselect opengl set xorg-x11
+  for arch in 32bit 64bit; do
+    for chip in i915 i965 r300 r600 sw; do
+      eselect mesa set $arch $chip classic &>/dev/null;
+    done;
+  done
+  echo "Adding snail-watcher to default"
+  eselect rc delete snail-xserver boot default
+  eselect rc delete snail-watcher boot
+  eselect rc add snail-watcher default
+  eselect rc stop snail-xserver
+  eselect rc restart snail-watcher
+elif [ "fedora" == "$DISTRIB_ID" ]; then
+  echo ""
+else
+  echo "No rules for Your distribution. Please make a bug report."
+  exit -1
+fi
+
+echo "Creating backups of original xorg.conf.* files and replacing with snail's versions..."
+[[ -f /etc/X11/xorg.conf && ! -f /etc/X11/xorg.conf.snail-bkp ]] && mv /etc/X11/xorg.conf /etc/X11/xorg.conf.snail-bkp
+[[ -f /etc/X11/xorg.conf.intel && ! -f /etc/X11/xorg.conf.intel.snail-bkp ]] && mv /etc/X11/xorg.conf.intel /etc/X11/xorg.conf.intel.snail-bkp
+[[ -f /etc/X11/xorg.conf.nvidia && ! -f /etc/X11/xorg.conf.nvidia.snail-bkp ]] && mv /etc/X11/xorg.conf.nvidia /etc/X11/xorg.conf.nvidia.snail-bkp
+cp -f /etc/X11/xorg.conf.intel.snail /etc/X11/xorg.conf.intel
+cp -f /etc/X11/xorg.conf.nvidia.snail /etc/X11/xorg.conf.nvidia
+ln -sf xorg.conf.intel /etc/X11/xorg.conf
+
+echo "Recognizing BusID of both chips and set it in xorg.conf.* files..."
+BusIDIntel="PCI:`lspci | grep VGA | grep Intel | cut -d" " -f1 | sed 's~\.~\:~g ; s~0\([0-9]\)~\1~g'`"
+BusIDNvidia="PCI:`lspci | grep VGA | grep nVidia | cut -d" " -f1 | sed 's~\.~\:~g ; s~0\([0-9]\)~\1~g'`"
+sed -i "s~BusIDIntel~$BusIDIntel~" /etc/X11/xorg.conf.intel
+sed -i "s~BusIDNvidia~$BusIDNvidia~" /etc/X11/xorg.conf.nvidia
+
+echo "`basename -- $0` is complete! ;-)"
