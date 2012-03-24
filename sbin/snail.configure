@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "Test for nVidia driver"
+lsmod | grep '^nvidia ' &>/dev/null
+[ 0 -ne $? ] && snail.nv_pwr_on && modprobe nvidia ; snail.nv_pwr_off
+if [ 0 -eq $? ]; then
+  echo "nVidia driver is OK! ;-)"
+  modprobe -r nvidia
+else
+  echo "You must install standart nVidia driver first!"
+  exit -1
+fi
+
 echo "Test for acpi_call module..."
 lsmod | grep '^acpi_call ' &>/dev/null
 if [ 0 -eq $? ]; then
@@ -82,7 +93,7 @@ if [ "gentoo" == "$DISTRIB_ID" ]; then
   eselect rc delete snail-watcher boot
   eselect rc add snail-watcher default
   eselect rc stop snail-xserver
-  eselect rc start snail-watcher
+  eselect rc restart snail-watcher
 elif [ "fedora" == "$DISTRIB_ID" ]; then
   echo ""
 else

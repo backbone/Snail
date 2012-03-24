@@ -1,6 +1,6 @@
 #!/sbin/runscript
 
-DAEMON="/usr/local/sbin/snail-watcher.sh"
+DAEMON="snail-watcher.sh"
 DAEMON_ARGS=""
 PIDFILE=/var/run/snail.pid
 PATH=$PATH:/usr/local/bin

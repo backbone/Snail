@@ -1,7 +1,7 @@
 #!/sbin/runscript
 
 DAEMON=/usr/bin/X
-DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/local/lib/snail -nolisten tcp -noreset :1 vt9"
+DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9"
 PIDFILE=/tmp/.X1-lock
 
 depend() {
