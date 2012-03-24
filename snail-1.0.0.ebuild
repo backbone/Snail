@@ -7,7 +7,7 @@ inherit eutils
 
 DESCRIPTION="Snail - nVidia Optimus support"
 
-SRC_URI="ftp://backbone.ws/projects/snail/snail-1.0.0.tar.bz2"
+SRC_URI="ftp://backbone.ws/projects/snail/${P}.tar.bz2"
 
 HOMEPAGE="https://chili.backbone.ws/projects/snail"
 
@@ -19,12 +19,12 @@ LICENSE="GPL-3"
 
 IUSE=""
 
-DEPEND="x11-drivers/nvidia-drivers"
+DEPEND="x11-drivers/nvidia-drivers
+        sys-apps/dmidecode"
 
 RDEPEND="${DEPEND}"
 
 src_install() {
-	echo "src_install=`pwd`" >>/tmp/snail.log
 	emake install DESTDIR="${D}" || die
 }
 
