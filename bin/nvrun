@@ -5,9 +5,6 @@ PATH=/usr/local/sbin:/usr/local/bin:$PATH
 TIMEOUT=10           # wait timeout for X server start
 let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 
-SERVICE=/etc/init.d/snail-xserver
-PROC=nvrun
-
 LOCK_FILE=/tmp/.snail.lock
 FIFO_FILE=/tmp/.snail.fifo
 
@@ -18,7 +15,9 @@ FIFO_FILE=/tmp/.snail.fifo
 
   if [ 0 -eq $? ]; then
 	echo "Running $@ on nVidia"
-	LD_PRELOAD="/usr/lib/opengl/nvidia/lib/libGL.so:/usr/lib/opengl/nvidia/lib/libnvidia-tls.so" snail.vglrun -d :1 "$@"
+	export LD_LIBRARY_PATH=/usr/lib/snail
+	export LD_PRELOAD="/usr/lib/snail/libGL.so:/usr/lib/snail/libnvidia-tls.so"
+	snail.vglrun -d :1 "$@"
 	echo "Application $@ was performed on nVidia"
 
   elif [ 0 -ne $INTEL_IF_FAIL ]; then
