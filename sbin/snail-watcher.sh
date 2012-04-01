@@ -3,7 +3,6 @@
 PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
 SERVICE=/etc/init.d/snail-xserver
-PROC=nvrun
 
 LOCK_FILE=/tmp/.snail.lock
 FIFO_FILE=/tmp/.snail.fifo
