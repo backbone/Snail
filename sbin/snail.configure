@@ -120,14 +120,9 @@ case "$DISTRIB_ID" in
         eselect mesa set $arch $chip classic &>/dev/null;
       done;
     done
-    ln -sf /usr/lib/xorg/modules/extensions/libdbe.so /usr/lib/snail/extensions/libdbe.so
-    ln -sf /usr/lib/xorg/modules/extensions/libdri.so /usr/lib/snail/extensions/libdri.so
-    ln -sf /usr/lib/xorg/modules/extensions/libdri2.so /usr/lib/snail/extensions/libdri2.so
-    ln -sf /usr/lib/xorg/modules/extensions/libextmod.so /usr/lib/snail/extensions/libextmod.so
-    ln -sf /usr/lib/xorg/modules/extensions/librecord.so /usr/lib/snail/extensions/librecord.so
-    ln -sf /usr/lib/opengl/nvidia/extensions/libglx.so /usr/lib/snail/extensions/libglx.so
-    ln -sf /usr/lib/opengl/nvidia/lib/libGL.so /usr/lib/snail/libGL.so
-    ln -sf /usr/lib/opengl/nvidia/lib/libnvidia-tls.so /usr/lib/snail/libnvidia-tls.so
+    ln -sf /usr/lib/opengl/nvidia/extensions /usr/lib/snail/extensions
+    ln -sf /usr/lib/opengl/nvidia/lib /usr/lib/snail/lib
+    ln -sf /usr/lib/xorg/modules /usr/lib/snail/modules
     grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
   ;;
 

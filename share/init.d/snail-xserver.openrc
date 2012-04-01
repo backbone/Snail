@@ -8,8 +8,7 @@ PIDFILE=/var/run/snail-xserver.pid
 start() {
 	ebegin "Starting Snail nVidia Optimus"
 	snail.nv_pwr_on || eend -1
-	export LD_LIBRARY_PATH=/usr/lib/snail
-	export LD_PRELOAD=/usr/lib/snail/libGL.so
+	export LD_LIBRARY_PATH=/usr/lib/snail:/usr/lib/snail/lib
 	pid=`cat $PIDFILE 2>/dev/null`
 	rm -f $PIDFILE
 	[ -z $pid ] || ! pgrep -s $pid X &>/dev/null && \
