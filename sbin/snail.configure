@@ -45,18 +45,19 @@ if [ -f /etc/gentoo-release ]; then
   DISTRIB_DESCRIPTION=`cat /etc/gentoo-release`
   DISTRIB_RELEASE=${DISTRIB_DESCRIPTION##* }
   DISTRIB_CODENAME=gentoo
-elif [ -f /etc/debian-version ]; then
+elif [ -f /etc/debian_version ]; then
   DISTRIB_ID=debian
-  DISTRIB_CODENAME=`cut -d'/' /etc/debian-version -f1`
-elif [ -f /etc/slax-version ]; then
+  DISTRIB_RELEASE=`cat /etc/debian_version`
+  DISTRIB_DESCRIPTION=`cat /etc/issue.net`
+elif [ -f /etc/slax_version ]; then
   DISTRIB_ID=slax
-  DISTRIB_DESCRIPTION=`cat /etc/slax-version`
+  DISTRIB_DESCRIPTION=`cat /etc/slax_version`
 elif [ -f /etc/arch-release ]; then
   DISTRIB_ID=arch
   DISTRIB_DESCRIPTION=`cat /etc/arch-release`
-elif [ -f /etc/slackware-version ]; then
+elif [ -f /etc/slackware_version ]; then
   DISTRIB_ID=slackware
-  DISTRIB_DESCRIPTION=`cat /etc/slackware-version`
+  DISTRIB_DESCRIPTION=`cat /etc/slackware_version`
 elif [ `which lsb_release` ]; then
   DISTRIB_ID=`lsb_release | grep '^Distributor' | sed 's~[^:]*:~~' | tr 'A-Z' 'a-z'`
   DISTRIB_DESCRIPTION=`lsb_release | grep '^Description' | sed 's~[^:]*:~~'`
@@ -94,6 +95,25 @@ if [ "gentoo" == "$DISTRIB_ID" ]; then
   eselect rc add snail-watcher default
   eselect rc stop snail-xserver
   eselect rc restart snail-watcher
+  grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
+elif [ "debian" == "$DISTRIB_ID" ]; then
+  grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
+  rm -f /usr/lib64/xorg/modules/extensions/libglx.so
+  ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
+  apt-get install --reinstall xserver-xorg-core
+  if [ -f /usr/lib64/nvidia/diversions/libGL.so.1 ]; then
+    rm -f /etc/alternatives/libGL.so.1
+    ln -s /usr/lib64/nvidia/diversions/libGL.so.1 /etc/alternatives
+  else
+    rm -f /usr/lib64/libGL.so /usr/lib64/libGL.so.1
+    ln -sf libGL.so.1 /usr/lib64/snail/libGL.so
+    ln -sf /usr/lib64/libGL.so.* /usr/lib64/snail/libGL.so.1
+    mv -f /usr/lib64/libGL.so.* /tmp
+    apt-get install --reinstall libgl1-mesa-glx
+    mv -f /tmp/libGL.so.* /usr/lib64
+  fi
+  update-rc.d snail-watcher defaults
+  /etc/init.d/snail-watcher start
 elif [ "fedora" == "$DISTRIB_ID" ]; then
   echo ""
 else
