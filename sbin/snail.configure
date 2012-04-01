@@ -81,45 +81,83 @@ echo "DISTRIB_DESCRIPTION=$DISTRIB_DESCRIPTION"
 echo "DISTRIB_RELEASE=$DISTRIB_RELEASE"
 echo "DISTRIB_CODENAME=$DISTRIB_CODENAME"
 
-echo "Configuring OpenGL libraries and nVidia GLX extensions"
-if [ "gentoo" == "$DISTRIB_ID" ]; then
-  eselect opengl set xorg-x11
-  for arch in 32bit 64bit; do
-    for chip in i915 i965 r300 r600 sw; do
-      eselect mesa set $arch $chip classic &>/dev/null;
-    done;
-  done
-  echo "Adding snail-watcher to default"
-  eselect rc delete snail-xserver boot default
-  eselect rc delete snail-watcher boot
-  eselect rc add snail-watcher default
-  eselect rc stop snail-xserver
-  eselect rc restart snail-watcher
-  grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
-elif [ "debian" == "$DISTRIB_ID" ]; then
-  grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
-  rm -f /usr/lib64/xorg/modules/extensions/libglx.so
-  ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
-  apt-get install --reinstall xserver-xorg-core
-  if [ -f /usr/lib64/nvidia/diversions/libGL.so.1 ]; then
-    rm -f /etc/alternatives/libGL.so.1
-    ln -s /usr/lib64/nvidia/diversions/libGL.so.1 /etc/alternatives
-  else
-    rm -f /usr/lib64/libGL.so /usr/lib64/libGL.so.1
-    ln -sf libGL.so.1 /usr/lib64/snail/libGL.so
-    ln -sf /usr/lib64/libGL.so.* /usr/lib64/snail/libGL.so.1
-    mv -f /usr/lib64/libGL.so.* /tmp
-    apt-get install --reinstall libgl1-mesa-glx
-    mv -f /tmp/libGL.so.* /usr/lib64
-  fi
-  update-rc.d snail-watcher defaults
-  /etc/init.d/snail-watcher start
-elif [ "fedora" == "$DISTRIB_ID" ]; then
-  echo ""
-else
-  echo "No rules for Your distribution. Please make a bug report."
-  exit -1
-fi
+echo "Copying system init scripts to /etc/init.d and start snail-watcher"
+SNAIL_INIT_D_PATH=/usr/share/snail/init.d
+case "$DISTRIB_ID" in
+  "gentoo")
+    cp -f $SNAIL_INIT_D_PATH/snail-watcher.openrc /etc/init.d/snail-watcher
+    cp -f $SNAIL_INIT_D_PATH/snail-xserver.openrc /etc/init.d/snail-xserver
+    eselect rc delete snail-xserver boot default
+    eselect rc delete snail-watcher boot
+    eselect rc add snail-watcher default
+    eselect rc stop snail-xserver
+    eselect rc restart snail-watcher
+  ;;
+
+  "debian")
+    cp -f $SNAIL_INIT_D_PATH/snail-watcher.sysv /etc/init.d/snail-watcher
+    cp -f $SNAIL_INIT_D_PATH/snail-xserver.sysv /etc/init.d/snail-xserver
+    update-rc.d snail-watcher defaults
+    /etc/init.d/snail-watcher start
+  ;;
+
+  "fedora")
+    echo ""
+  ;;
+
+  *)
+    echo "No rules for Your distribution. Please make a bug report."
+    exit -1
+  ;;
+esac
+
+echo "Configuring kernel modules and OpenGL libraries"
+case "$DISTRIB_ID" in
+  "gentoo")
+    eselect opengl set xorg-x11
+    for arch in 32bit 64bit; do
+      for chip in i915 i965 r300 r600 sw; do
+        eselect mesa set $arch $chip classic &>/dev/null;
+      done;
+    done
+    ln -sf /usr/lib/xorg/modules/extensions/libdbe.so /usr/lib/snail/extensions/libdbe.so
+    ln -sf /usr/lib/xorg/modules/extensions/libdri.so /usr/lib/snail/extensions/libdri.so
+    ln -sf /usr/lib/xorg/modules/extensions/libdri2.so /usr/lib/snail/extensions/libdri2.so
+    ln -sf /usr/lib/xorg/modules/extensions/libextmod.so /usr/lib/snail/extensions/libextmod.so
+    ln -sf /usr/lib/xorg/modules/extensions/librecord.so /usr/lib/snail/extensions/librecord.so
+    ln -sf /usr/lib/opengl/nvidia/extensions/libglx.so /usr/lib/snail/extensions/libglx.so
+    ln -sf /usr/lib/opengl/nvidia/lib/libGL.so /usr/lib/snail/libGL.so
+    ln -sf /usr/lib/opengl/nvidia/lib/libnvidia-tls.so /usr/lib/snail/libnvidia-tls.so
+    grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
+  ;;
+
+  "debian")
+    grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
+    rm -f /usr/lib64/xorg/modules/extensions/libglx.so
+    ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
+    apt-get install --reinstall xserver-xorg-core
+    if [ -f /usr/lib64/nvidia/diversions/libGL.so.1 ]; then
+      rm -f /etc/alternatives/libGL.so.1
+      ln -s /usr/lib64/nvidia/diversions/libGL.so.1 /etc/alternatives
+    else
+      rm -f /usr/lib64/libGL.so /usr/lib64/libGL.so.1
+      ln -sf libGL.so.1 /usr/lib64/snail/libGL.so
+      ln -sf /usr/lib64/libGL.so.* /usr/lib64/snail/libGL.so.1
+      mv -f /usr/lib64/libGL.so.* /tmp
+      apt-get install --reinstall libgl1-mesa-glx
+      mv -f /tmp/libGL.so.* /usr/lib64
+    fi
+  ;;
+
+  "fedora")
+    echo ""
+  ;;
+
+  *)
+    echo "No rules for Your distribution. Please make a bug report."
+    exit -1
+  ;;
+esac
 
 echo "Creating backups of original xorg.conf.* files and replacing with snail's versions..."
 [[ -f /etc/X11/xorg.conf && ! -f /etc/X11/xorg.conf.snail-bkp ]] && mv /etc/X11/xorg.conf /etc/X11/xorg.conf.snail-bkp

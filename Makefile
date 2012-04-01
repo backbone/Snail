@@ -17,7 +17,6 @@ install:
 	install -d ${DESTDIR}/${PREFIX}/share/snail
 	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d
 	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d
-	install -d ${DESTDIR}/${PREFIX}/lib/snail/modules
 	install -d ${DESTDIR}/${PREFIX}/lib/snail/extensions
 
 uninstall:
