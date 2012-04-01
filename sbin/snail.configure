@@ -49,6 +49,7 @@ elif [ -f /etc/debian_version ]; then
   DISTRIB_ID=debian
   DISTRIB_RELEASE=`cat /etc/debian_version`
   DISTRIB_DESCRIPTION=`cat /etc/issue.net`
+  DISTRIB_CODENAME=${DISTRIB_RELEASE%%/*}
 elif [ -f /etc/slax_version ]; then
   DISTRIB_ID=slax
   DISTRIB_DESCRIPTION=`cat /etc/slax_version`
@@ -97,7 +98,9 @@ case "$DISTRIB_ID" in
   "debian")
     cp -f $SNAIL_INIT_D_PATH/snail-watcher.sysv /etc/init.d/snail-watcher
     cp -f $SNAIL_INIT_D_PATH/snail-xserver.sysv /etc/init.d/snail-xserver
+    update-rc.d snail-xserver remove
     update-rc.d snail-watcher defaults
+    /etc/init.d/snail-xserver stop
     /etc/init.d/snail-watcher start
   ;;
 
@@ -128,6 +131,19 @@ case "$DISTRIB_ID" in
 
   "debian")
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
+    case "$DISTRIB_RELEASE" in
+      "squeeze")
+
+      ;;
+
+      "wheezy")
+
+      ;;
+
+      *)
+        echo "No rules for Your distribution. Please make a bug report."
+        exit -1
+      ;;
     #rm -f /usr/lib64/xorg/modules/extensions/libglx.so
     #ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
     #apt-get install --reinstall xserver-xorg-core
