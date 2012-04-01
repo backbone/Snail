@@ -6,8 +6,6 @@ all:
 install:
 	install -d ${DESTDIR}/etc/X11
 	install --mode=644 etc/X11/* ${DESTDIR}/etc/X11
-	install -d ${DESTDIR}/etc/init.d
-	install etc/init.d/* ${DESTDIR}/etc/init.d
 	install -d ${DESTDIR}/${PREFIX}/bin
 	install bin/* ${DESTDIR}/${PREFIX}/bin
 	install -d ${DESTDIR}/${PREFIX}/sbin
@@ -24,7 +22,7 @@ install:
 
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
-	rm -f ${DESTDIR}/etc/init.d/snail-*
+	rm -f ${DESTDIR}/etc/init.d/snail*
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libdlfaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libgefaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/librrfaker.so
