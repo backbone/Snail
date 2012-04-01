@@ -128,20 +128,20 @@ case "$DISTRIB_ID" in
 
   "debian")
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
-    rm -f /usr/lib64/xorg/modules/extensions/libglx.so
-    ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
-    apt-get install --reinstall xserver-xorg-core
-    if [ -f /usr/lib64/nvidia/diversions/libGL.so.1 ]; then
-      rm -f /etc/alternatives/libGL.so.1
-      ln -s /usr/lib64/nvidia/diversions/libGL.so.1 /etc/alternatives
-    else
-      rm -f /usr/lib64/libGL.so /usr/lib64/libGL.so.1
-      ln -sf libGL.so.1 /usr/lib64/snail/libGL.so
-      ln -sf /usr/lib64/libGL.so.* /usr/lib64/snail/libGL.so.1
-      mv -f /usr/lib64/libGL.so.* /tmp
-      apt-get install --reinstall libgl1-mesa-glx
-      mv -f /tmp/libGL.so.* /usr/lib64
-    fi
+    #rm -f /usr/lib64/xorg/modules/extensions/libglx.so
+    #ln -sf /usr/lib64/xorg/modules/extensions/libglx.so.* /usr/lib64/snail/modules/extensions/libglx.so
+    #apt-get install --reinstall xserver-xorg-core
+    #if [ -f /usr/lib64/nvidia/diversions/libGL.so.1 ]; then
+    #  rm -f /etc/alternatives/libGL.so.1
+    #  ln -s /usr/lib64/nvidia/diversions/libGL.so.1 /etc/alternatives
+    #else
+    #  rm -f /usr/lib64/libGL.so /usr/lib64/libGL.so.1
+    #  ln -sf libGL.so.1 /usr/lib64/snail/libGL.so
+    #  ln -sf /usr/lib64/libGL.so.* /usr/lib64/snail/libGL.so.1
+    #  mv -f /usr/lib64/libGL.so.* /tmp
+    #  apt-get install --reinstall libgl1-mesa-glx
+    #  mv -f /tmp/libGL.so.* /usr/lib64
+    #fi
   ;;
 
   "fedora")

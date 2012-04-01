@@ -16,7 +16,7 @@
 . /lib/lsb/init-functions
 
 PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-DAEMON="snail-watcher.sh"
+DAEMON="/usr/sbin/snail-watcher.sh"
 DAEMON_ARGS=""
 PIDFILE=/var/run/snail-watcher.pid
 
@@ -31,7 +31,7 @@ case "$1" in
                           --pidfile $PIDFILE \
                           --exec $DAEMON \
                           -- $DAEMON_ARGS \
-      || log_msg "Already running..."
+      || echo "Already running..."
     log_end_msg $?
     ;;
   stop)
