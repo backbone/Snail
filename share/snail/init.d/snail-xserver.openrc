@@ -1,0 +1,35 @@
+#!/sbin/runscript
+
+PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+DAEMON=/usr/bin/X
+DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9"
+PIDFILE=/var/run/snail-xserver.pid
+
+start() {
+	ebegin "Starting Snail nVidia Optimus"
+	snail.nv_pwr_on || eend -1
+	export LD_LIBRARY_PATH=/usr/lib/snail
+	export LD_PRELOAD=/usr/lib/snail/libGL.so
+	pid=`cat $PIDFILE 2>/dev/null`
+	rm -f $PIDFILE
+	[ -z $pid ] || ! pgrep -s $pid X &>/dev/null && \
+	        echo "No Snail found running. Starting it..." && \
+		start-stop-daemon \
+		                  --start \
+		                  --quiet \
+		                  --background \
+		                  --make-pidfile \
+		                  --pidfile $PIDFILE \
+		                  --exec $DAEMON \
+		                  -- $DAEMON_ARGS
+	status=$?
+	[ ! -z $pid ] && pgrep -s $pid X &>/dev/null && echo "Already running..."  
+	eend $status
+}
+
+stop() {
+	ebegin "Stopping Snail nVidia Optimus"
+	start-stop-daemon --stop --pidfile $PIDFILE
+	snail.nv_pwr_off
+	eend $?
+}

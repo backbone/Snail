@@ -11,9 +11,11 @@ depend() {
 
 start() {
         ebegin "Starting ${SVCNAME}"
-        start-stop-daemon --make-pidfile \
-			  --background \
+        start-stop-daemon \
                           --start \
+	                  --quiet \
+	                  --background \
+	                  --make-pidfile \
                           --pidfile $PIDFILE \
                           --exec $DAEMON \
                           -- $DAEMON_ARGS

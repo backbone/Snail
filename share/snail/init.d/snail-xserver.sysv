@@ -1,17 +1,32 @@
-#!/sbin/runscript
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:             snail-xserver
+# Required-Start:       $snail-watcher
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start:
+# Default-Stop:         0 1 6
+# Short-Description:    Snail xserver.
+# Description:          Starts the snail-xserver daemon
+#                       /etc/default/snail-xserver.
+### END INIT INFO
+
+# Get lsb functions
+. /lib/lsb/init-functions
 
 PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 DAEMON=/usr/bin/X
 DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9"
 PIDFILE=/var/run/snail-xserver.pid
 
-depend() {
-	need xdm
-}
+# Get lsb functions
+. /lib/lsb/init-functions
 
-start() {
-	ebegin "Starting Snail nVidia Optimus"
-	snail.nv_pwr_on || eend -1
+case "$1" in
+  start)
+    log_begin_msg "Starting Snail nVidia Optimus"
+	snail.nv_pwr_on || log_end_msg 1
 	export LD_LIBRARY_PATH=/usr/lib/snail
 	export LD_PRELOAD=/usr/lib/snail/libGL.so
 	pid=`cat $PIDFILE 2>/dev/null`
@@ -28,12 +43,19 @@ start() {
 		                  -- $DAEMON_ARGS
 	status=$?
 	[ ! -z $pid ] && pgrep -s $pid X &>/dev/null && echo "Already running..."  
-	eend $status
-}
-
-stop() {
-	ebegin "Stopping Snail nVidia Optimus"
+    log_end_msg $?
+    ;;
+  stop)
+        log_begin_msg "Stopping Snail nVidia Optimus"
 	start-stop-daemon --stop --pidfile $PIDFILE
 	snail.nv_pwr_off
-	eend $?
-}
+        log_end_msg $?
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+    log_success_msg "Usage: /etc/init.d/snail-xserver {start|stop|restart}"
+    exit 1
+esac

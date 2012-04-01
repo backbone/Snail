@@ -1,0 +1,50 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:             snail-watcher
+# Required-Start:       $local_fs
+# Required-Stop:        $local_fs
+# Should-Start:
+# Should-Stop:
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Snail watcher.
+# Description:          Starts the snail-watcher daemon
+#                       /etc/default/snail-watcher.
+### END INIT INFO
+
+# Get lsb functions
+. /lib/lsb/init-functions
+
+PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+DAEMON="snail-watcher.sh"
+DAEMON_ARGS=""
+PIDFILE=/var/run/snail-watcher.pid
+
+case "$1" in
+  start)
+    log_begin_msg "Starting snail-watcher"
+      pid=`cat $PIDFILE 2>/dev/null`
+      [ -z $pid ] || ! pgrep -s $pid -f snail-watcher.sh &>/dev/null && \
+        start-stop-daemon --make-pidfile \
+                          --background \
+                          --start \
+                          --pidfile $PIDFILE \
+                          --exec $DAEMON \
+                          -- $DAEMON_ARGS \
+      || log_msg "Already running..."
+    log_end_msg $?
+    ;;
+  stop)
+        log_begin_msg "Stopping snail-watcher"
+        start-stop-daemon --stop \
+                          --pidfile $PIDFILE
+        log_end_msg $?
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+    log_success_msg "Usage: /etc/init.d/snail-watcher {start|stop|restart}"
+    exit 1
+esac

@@ -15,12 +15,12 @@ install:
 	install -d ${DESTDIR}/${PREFIX}/lib64
 	install lib64/*.so ${DESTDIR}/${PREFIX}/lib64
 	install -d ${DESTDIR}/${PREFIX}/lib64/snail
-	ln -sf /usr/lib64/opengl/nvidia/extensions ${DESTDIR}/${PREFIX}/lib64/snail
+	install -d ${DESTDIR}/${PREFIX}/share
+	install -d ${DESTDIR}/${PREFIX}/share/snail
+	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d
+	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d
 	install -d ${DESTDIR}/${PREFIX}/lib64/snail/modules
-	ln -sf /usr/lib64/xorg/modules/drivers ${DESTDIR}/${PREFIX}/lib64/snail/modules
-	ln -sf /usr/lib64/xorg/modules/extensions ${DESTDIR}/${PREFIX}/lib64/snail/modules
-	ln -sf /usr/lib64/xorg/modules/libfb.so ${DESTDIR}/${PREFIX}/lib64/snail/modules
-	ln -sf /usr/lib64/xorg/modules/libwfb.so ${DESTDIR}/${PREFIX}/lib64/snail/modules
+	install -d ${DESTDIR}/${PREFIX}/lib64/snail/extensions
 
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
@@ -29,6 +29,7 @@ uninstall:
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libgefaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/librrfaker.so
 	rm -rf ${DESTDIR}/${PREFIX}/lib64/snail
+	rm -rf ${DESTDIR}/${PREFIX}/share/snail
 	rm -f ${DESTDIR}/${PREFIX}/bin/nvrun
 	rm -f ${DESTDIR}/${PREFIX}/bin/snail.vglrun
 	rm -f ${DESTDIR}/${PREFIX}/sbin/snail.nv_pwr_off
