@@ -24,14 +24,14 @@ case "$1" in
   start)
     log_begin_msg "Starting snail-watcher"
       pid=`cat $PIDFILE 2>/dev/null`
-      [ -z $pid ] || ! pgrep -s $pid -f snail-watcher.sh &>/dev/null && \
+      [ -z $pid ] || ! ps $pid 1>/dev/null 2>&1 && \
         start-stop-daemon --make-pidfile \
                           --background \
                           --start \
                           --pidfile $PIDFILE \
                           --exec $DAEMON \
                           -- $DAEMON_ARGS \
-      || echo "Already running..."
+      || log_warning_msg "Already running..."
     log_end_msg $?
     ;;
   stop)
