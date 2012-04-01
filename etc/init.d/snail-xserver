@@ -1,8 +1,9 @@
 #!/sbin/runscript
 
+PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 DAEMON=/usr/bin/X
 DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9"
-PIDFILE=/tmp/.X1-lock
+PIDFILE=/var/run/snail-xserver.pid
 
 depend() {
 	need xdm
@@ -11,23 +12,28 @@ depend() {
 start() {
 	ebegin "Starting Snail nVidia Optimus"
 	snail.nv_pwr_on || eend -1
-	! ps -p `cat $PIDFILE 2>&1` > /dev/null 2>&1 || eend -1
-	export LD_LIBRARY_PATH=/usr/lib/opengl/nvidia/lib:/usr/lib/opengl/nvidia/lib
-	start-stop-daemon --start --quiet --background --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS
+	export LD_LIBRARY_PATH=/usr/lib/snail
+	export LD_PRELOAD=/usr/lib/snail/libGL.so
+	pid=`cat $PIDFILE 2>/dev/null`
+	rm -f $PIDFILE
+	[ -z $pid ] || ! pgrep -s $pid X &>/dev/null && \
+	        echo "No Snail found running. Starting it..." && \
+		start-stop-daemon \
+		                  --start \
+		                  --quiet \
+		                  --background \
+		                  --make-pidfile \
+		                  --pidfile $PIDFILE \
+		                  --exec $DAEMON \
+		                  -- $DAEMON_ARGS
 	status=$?
-	# FIXME: remove --background flag and next cycle
-        let i=300
-        while [ 0 -lt $i ]; do
-		[ -f $PIDFILE ] && pgrep -s `cat $PIDFILE` &>/dev/null && break
-		sleep 0.01
-		let i--
-	done
+	[ ! -z $pid ] && pgrep -s $pid X &>/dev/null && echo "Already running..."  
 	eend $status
 }
 
 stop() {
 	ebegin "Stopping Snail nVidia Optimus"
-	kill `cat $PIDFILE 2>&1` > /dev/null 2>&1
-	snail.nv_pwr_off || eend -1
-	eend $result
+	start-stop-daemon --stop --pidfile $PIDFILE
+	snail.nv_pwr_off
+	eend $?
 }

@@ -86,7 +86,7 @@ while [ 0 -lt $retry ]; do
 		;;
 	esac
 
-	sleep 0.01
+	sleep 0.2
 	let retry--
 	echo "retry countdown: $retry"
 done

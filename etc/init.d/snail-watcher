@@ -1,9 +1,9 @@
 #!/sbin/runscript
 
+PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 DAEMON="snail-watcher.sh"
 DAEMON_ARGS=""
-PIDFILE=/var/run/snail.pid
-PATH=$PATH:/usr/local/bin
+PIDFILE=/var/run/snail-watcher.pid
 
 depend() {
         need localmount
@@ -14,8 +14,8 @@ start() {
         start-stop-daemon --make-pidfile \
 			  --background \
                           --start \
-                          --exec $DAEMON \
                           --pidfile $PIDFILE \
+                          --exec $DAEMON \
                           -- $DAEMON_ARGS
         eend $?
 }
@@ -23,7 +23,6 @@ start() {
 stop() {
         ebegin "Stopping ${SVCNAME}"
         start-stop-daemon --stop \
-                          --exec $DAEMON \
                           --pidfile $PIDFILE
         eend $?
 }
