@@ -16,8 +16,6 @@ FIFO_FILE=/tmp/.snail.fifo
   if [ 0 -eq $? ]; then
 	echo "Running $@ on nVidia"
 	export LD_LIBRARY_PATH=/usr/lib/snail:/usr/lib/snail/lib
-	[ -f /usr/lib/snail/libGL.so ] && LD_PRELOAD=$LD_PRELOAD:/usr/lib/snail/libGL.so
-	[ -f /usr/lib/snail/libnvidia-tls.so ] && LD_PRELOAD=$LD_PRELOAD:/usr/lib/snail/libnvidia-tls.so
 	snail.vglrun -d :1 "$@"
 	echo "Application $@ was performed on nVidia"
 
