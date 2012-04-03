@@ -132,7 +132,7 @@ case "$DISTRIB_ID" in
   "debian")
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
     case "$DISTRIB_RELEASE" in
-      "6.0.4")
+      6.?.?)
         # nVidia driver installed from Debian repositories
         if [ -f /usr/lib/nvidia/diversions/libGL.so.1 ]; then
           ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
