@@ -163,8 +163,18 @@ case "$DISTRIB_ID" in
         fi
       ;;
 
-      "wheezy")
+      wheezy*)
+          rm -f /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
+          ln -sf /usr/lib/mesa-diverted/x86_64-linux-gnu/libGL.so.1 /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
+          rm -f /etc/alternatives/glx--linux-libglx.so
+          ln -sf /usr/lib/xorg/modules/extensions/libglx.so /etc/alternatives/glx--linux-libglx.so
 
+          ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
+          ln -sf /usr/lib/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
+
+          ln -sf /usr/lib/x86_64-linux-gnu/nvidia/current/libGL.so.1 /usr/lib/snail/libGL.so.1
+          ln -sf /etc/alternatives/nvidia/libglx.so /usr/lib/snail/libglx.so
+          ln -sf /usr/lib/nvidia/nvidia/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
       ;;
 
       *)
