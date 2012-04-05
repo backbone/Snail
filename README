@@ -1,0 +1,18 @@
+nVidia Optimus on GNU/Linux.
+Features
+
+    Full independent 3D on both video chips.
+    Auto power off for second X-server and nVidia chip.
+    Easy installation (look at Wiki).
+    Multiuser access.
+    Run in a way nvrun app.
+
+Tested distros
+
+    Gentoo amd64
+    Debian Squeeze amd64
+    Debian Wheezy amd64
+
+Supported Models: M11XR2, 1015PN, 1215N, K42Jc, K52Jc, N53Jf, N53Jg, N71Jv, N73Jf, P52Jc, PL80Jt, U30Jc, U33Jc, U35Jc, U36Jc, UL80Jt, N53Sn, U41Sv, N53Sv, N61Jv, N73Sv, P31Jg, U43Jc, UL30Vt, E6420, InspironN5110, XPSL702X, Vostro3300, Vostro3500, XPS15, ThinkPadT410, ThinkPadT420.
+
+Video on YouTube: http://www.youtube.com/watch?v=c6RH69j-gMY&feature=plcp&context=C3f5cbeeUDOEgsToPDskLOX8DnELkwYsi2QZ7_phwJ
