@@ -90,8 +90,8 @@ echo "DISTRIB_DESCRIPTION=$DISTRIB_DESCRIPTION"
 echo "DISTRIB_RELEASE=$DISTRIB_RELEASE"
 echo "DISTRIB_CODENAME=$DISTRIB_CODENAME"
 
-echo "Copying system init scripts (SysV/OpenRC/Systemd) and start snail-watcher"
 SNAIL_INIT_D_PATH=/usr/share/snail/init.d
+echo "Copying system init scripts (SysV/OpenRC/Systemd), start snail-watcher, configuring kernel modules and OpenGL libraries"
 case "$DISTRIB_ID" in
   "gentoo")
     cp -f $SNAIL_INIT_D_PATH/snail-watcher.openrc /etc/init.d/snail-watcher
@@ -101,30 +101,7 @@ case "$DISTRIB_ID" in
     eselect rc add snail-watcher default
     eselect rc stop snail-xserver
     eselect rc restart snail-watcher
-  ;;
-
-  "debian")
-    cp -f $SNAIL_INIT_D_PATH/snail-watcher.sysv /etc/init.d/snail-watcher
-    cp -f $SNAIL_INIT_D_PATH/snail-xserver.sysv /etc/init.d/snail-xserver
-    update-rc.d snail-xserver remove
-    update-rc.d snail-watcher defaults
-    /etc/init.d/snail-xserver stop
-    /etc/init.d/snail-watcher start
-  ;;
-
-  "fedora")
-    echo ""
-  ;;
-
-  *)
-    echo "No rules for Your distribution. Please make a bug report."
-    exit -1
-  ;;
-esac
-
-echo "Configuring kernel modules and OpenGL libraries"
-case "$DISTRIB_ID" in
-  "gentoo")
+ 
     eselect opengl set xorg-x11
     for arch in 32bit 64bit; do
       for chip in i915 i965 r300 r600 sw; do
@@ -138,6 +115,13 @@ case "$DISTRIB_ID" in
   ;;
 
   "debian")
+    cp -f $SNAIL_INIT_D_PATH/snail-watcher.sysv /etc/init.d/snail-watcher
+    cp -f $SNAIL_INIT_D_PATH/snail-xserver.sysv /etc/init.d/snail-xserver
+    update-rc.d snail-xserver remove
+    update-rc.d snail-watcher defaults
+    /etc/init.d/snail-xserver stop
+    /etc/init.d/snail-watcher start
+ 
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
     case "$DISTRIB_RELEASE" in
       6.?.?)
@@ -196,6 +180,11 @@ case "$DISTRIB_ID" in
     case "$DISTRIB_CODENAME" in
       Verne)
         echo acpi_call > /etc/modules-load.d/snail.conf
+          cp -f $SNAIL_INIT_D_PATH/snail-watcher.systemd /etc/systemd/system/snail-watcher.service
+          cp -f $SNAIL_INIT_D_PATH/snail-xserver.systemd /etc/systemd/system/snail-xserver.service
+          systemctl --system daemon-reload
+          systemctl start snail-watcher.service
+          systemctl enable snail-watcher.service
       ;;
 
       *)
