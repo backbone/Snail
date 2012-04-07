@@ -1,14 +1,30 @@
 #!/bin/bash
 
-model=`dmidecode $@ -s system-product-name`
+TRIES=8
 
-let retry=8
-while [ 0 -lt $retry ]; do
-	if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
+
+# Trying vgaswitcheroo method
+if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	let tries=$TRIES
+	while [ 0 -lt $tries ]; do
 		modprobe -r nvidia \
 		&& echo 'OFF DIS' > /sys/kernel/debug/vgaswitcheroo/switch \
 		&& exit 0
-	else
+
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+	echo "Cann't power off nVidia chip ;-("
+	exit -1
+fi
+
+# Trying acpi_call method
+if [ -f /proc/acpi/call ]; then
+	model=`dmidecode $@ -s system-product-name`
+	tries=$TRIES
+	while [ 0 -lt $tries ]; do
 		case "$model" in
 			M11XR2)
 				modprobe -r nvidia \
@@ -89,12 +105,12 @@ while [ 0 -lt $retry ]; do
 			*) echo "Snail: unknown Notebook model: $model"; exit -1
 			;;
 		esac
-	fi
 
-	sleep 0.2
-	let retry--
-	echo "retry countdown: $retry"
-done
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+fi
 
+echo "Cann't power off nVidia chip"
 exit -1
-
