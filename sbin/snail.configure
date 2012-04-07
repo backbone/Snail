@@ -195,6 +195,7 @@ case "$DISTRIB_ID" in
   "fedora")
     case "$DISTRIB_CODENAME" in
       Verne)
+        echo acpi_call > /etc/modules-load.d/snail.conf
       ;;
 
       *)
