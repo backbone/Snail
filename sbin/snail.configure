@@ -92,6 +92,7 @@ echo "DISTRIB_CODENAME=$DISTRIB_CODENAME"
 
 SNAIL_INIT_D_PATH=/usr/share/snail/init.d
 echo "Copying system init scripts (SysV/OpenRC/Systemd), start snail-watcher, configuring kernel modules and OpenGL libraries"
+[[ -d /usr/lib64/snail && ! -d /usr/lib/snail ]] && ln -s /usr/lib64/snail /usr/lib/snail
 case "$DISTRIB_ID" in
   "gentoo")
     cp -f $SNAIL_INIT_D_PATH/snail-watcher.openrc /etc/init.d/snail-watcher
