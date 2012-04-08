@@ -24,6 +24,6 @@ Section "Device"
 EndSection
 
 Section "Extensions"
-        Option        "Composite"     "Disable"	# Enable in case you are using Compiz
+        # Option        "Composite"     "Disable"	# Uncomment if you want to disable composite extensions
         Option        "RENDER"        "Enable"
 EndSection
