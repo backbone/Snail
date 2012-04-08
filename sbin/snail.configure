@@ -186,6 +186,11 @@ case "$DISTRIB_ID" in
           systemctl --system daemon-reload
           systemctl start snail-watcher.service
           systemctl enable snail-watcher.service
+          ln -sf /usr/lib64/nvidia/libGL.so.1 /usr/lib/snail/libGL.so.1
+          ln -sf /usr/lib64/xorg/modules/libfb.so /usr/lib/snail/libfb.so
+          ln -sf /usr/lib64/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
+          ln -sf /usr/lib64/xorg/modules/extensions/nvidia/libglx.so /usr/lib/snail/libglx.so
+          ln -sf /usr/lib64/xorg/modules/drivers/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
       ;;
 
       *)
