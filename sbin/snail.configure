@@ -1,38 +1,39 @@
 #!/bin/bash
 
-echo "Test for nVidia driver"
-lsmod | grep '^nvidia ' &>/dev/null
-[ 0 -ne $? ] && snail.nv_pwr_on && modprobe nvidia ; snail.nv_pwr_off
-if [ 0 -eq $? ]; then
-  echo "nVidia driver is OK! ;-)"
-  modprobe -r nvidia
+echo "Test for acpi_call/vgaswitcheroo"
+if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+    echo "vgaswitcheroo is OK! ;-)"
 else
-  echo "You must install standart nVidia driver first!"
-  exit -1
-fi
-
-echo "Test for acpi_call module..."
-lsmod | grep '^acpi_call ' &>/dev/null
-if [ 0 -eq $? ]; then
-  echo "acpi_call is OK! ;-)"
-else
-  modprobe acpi_call && lsmod | grep '^acpi_call ' &>/dev/null
-  if [ 0 -eq $? ]; then
-    modprobe -rf acpi_call
-    echo "Please configure acpi_call module for autoloading on system start and try again!"
-    exit -1
+  if [ -f /proc/acpi/call ]; then
+    echo "acpi_call is OK! ;-)"
   else
-    echo "acpi_call kernel module not found, please install it!"
-    exit -1
+    modprobe acpi_call
+    if [ -f /proc/acpi/call ]; then
+      echo "Warning: Please configure acpi_call module for autoloading on system startup!"
+    else
+      echo "No vgaswitcheroo/acpi_call found. Please configure/install one of them! ;-("
+      exit -1
+    fi
   fi
 fi
 
+echo "Test for nVidia driver"
+snail.nv_pwr_on && snail.nv_pwr_off
+if [ 0 -eq $? ]; then
+  echo "nVidia driver is OK! ;-)"
+else
+  echo "Test failed ;-("
+  echo "Probably you need to install standart nVidia driver or make a bug report..."
+  exit -1
+fi
+
 echo "Test for dmidecode utility..."
-dmidecode &>/dev/null
+which dmidecode &>/dev/null
 if [ 0 -eq $? ]; then
   echo "dmidecode utility is OK! ;-)"
 else
-  echo "Please install dmidecode and run the script as root again."
+  echo "Please install dmidecode and run the script again."
+  exit -1
 fi
 
 echo "Detecting your distribution..."
@@ -59,7 +60,7 @@ elif [ -f /etc/arch-release ]; then
 elif [ -f /etc/slackware_version ]; then
   DISTRIB_ID=slackware
   DISTRIB_DESCRIPTION=`cat /etc/slackware_version`
-elif [ `which lsb_release` ]; then
+elif [ `which lsb_release &>/dev/null` ]; then
   DISTRIB_ID=`lsb_release | grep '^Distributor' | sed 's~[^:]*:~~' | tr 'A-Z' 'a-z'`
   DISTRIB_DESCRIPTION=`lsb_release | grep '^Description' | sed 's~[^:]*:~~'`
   DISTRIB_RELEASE=`lsb_release | grep '^Release' | sed 's~[^:]*:~~'`
@@ -69,6 +70,13 @@ elif [ -f /etc/os-release ]; then
   DISTRIB_DESCRIPTION=`grep '^PRETTY_NAME=' /etc/os-release | cut -d'=' -f2`
   DISTRIB_RELEASE=`grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2`
   DISTRIB_CODENAME=`grep '^NAME=' /etc/os-release | cut -d'=' -f2`
+elif [ -f /etc/fedora-release ]; then
+  DISTRIB_ID=fedora
+  DISTRIB_DESCRIPTION=`cat /etc/fedora-release`
+  DISTRIB_RELEASE=${DISTRIB_DESCRIPTION% *}
+  DISTRIB_RELEASE=${DISTRIB_RELEASE##* }
+  DISTRIB_CODENAME=${DISTRIB_DESCRIPTION##*\(}
+  DISTRIB_CODENAME=${DISTRIB_CODENAME%%\)*}
 else
   DISTRIB_DESCRIPTION=`cat /etc/*release* | head -n1`
   DISTRIB_ID=`echo ${DISTRIB_DESCRIPTION%% *} | tr 'A-Z' 'a-z'`
@@ -82,8 +90,9 @@ echo "DISTRIB_DESCRIPTION=$DISTRIB_DESCRIPTION"
 echo "DISTRIB_RELEASE=$DISTRIB_RELEASE"
 echo "DISTRIB_CODENAME=$DISTRIB_CODENAME"
 
-echo "Copying system init scripts to /etc/init.d and start snail-watcher"
 SNAIL_INIT_D_PATH=/usr/share/snail/init.d
+echo "Copying system init scripts (SysV/OpenRC/Systemd), start snail-watcher, configuring kernel modules and OpenGL libraries"
+[[ -d /usr/lib64/snail && ! -d /usr/lib/snail ]] && ln -s /usr/lib64/snail /usr/lib/snail
 case "$DISTRIB_ID" in
   "gentoo")
     cp -f $SNAIL_INIT_D_PATH/snail-watcher.openrc /etc/init.d/snail-watcher
@@ -93,6 +102,17 @@ case "$DISTRIB_ID" in
     eselect rc add snail-watcher default
     eselect rc stop snail-xserver
     eselect rc restart snail-watcher
+ 
+    eselect opengl set xorg-x11
+    for arch in 32bit 64bit; do
+      for chip in i915 i965 r300 r600 sw; do
+        eselect mesa set $arch $chip classic &>/dev/null;
+      done;
+    done
+    ln -sf /usr/lib/opengl/nvidia/extensions /usr/lib/snail/
+    ln -sf /usr/lib/opengl/nvidia/lib /usr/lib/snail/
+    ln -sf /usr/lib/xorg/modules /usr/lib/snail/
+    grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
   ;;
 
   "debian")
@@ -102,34 +122,7 @@ case "$DISTRIB_ID" in
     update-rc.d snail-watcher defaults
     /etc/init.d/snail-xserver stop
     /etc/init.d/snail-watcher start
-  ;;
-
-  "fedora")
-    echo ""
-  ;;
-
-  *)
-    echo "No rules for Your distribution. Please make a bug report."
-    exit -1
-  ;;
-esac
-
-echo "Configuring kernel modules and OpenGL libraries"
-case "$DISTRIB_ID" in
-  "gentoo")
-    eselect opengl set xorg-x11
-    for arch in 32bit 64bit; do
-      for chip in i915 i965 r300 r600 sw; do
-        eselect mesa set $arch $chip classic &>/dev/null;
-      done;
-    done
-    ln -sf /usr/lib/opengl/nvidia/extensions /usr/lib/snail/extensions
-    ln -sf /usr/lib/opengl/nvidia/lib /usr/lib/snail/lib
-    ln -sf /usr/lib/xorg/modules /usr/lib/snail/modules
-    grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
-  ;;
-
-  "debian")
+ 
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
     case "$DISTRIB_RELEASE" in
       6.?.?)
@@ -185,7 +178,28 @@ case "$DISTRIB_ID" in
   ;;
 
   "fedora")
-    echo ""
+    case "$DISTRIB_CODENAME" in
+      Verne)
+        echo acpi_call > /etc/modules-load.d/snail.conf
+          cp -f $SNAIL_INIT_D_PATH/snail-watcher.systemd /etc/systemd/system/snail-watcher.service
+          cp -f $SNAIL_INIT_D_PATH/snail-xserver.systemd /etc/systemd/system/snail-xserver.service
+          systemctl --system daemon-reload
+          systemctl start snail-watcher.service
+          systemctl enable snail-watcher.service
+          ln -sf /usr/lib64/xorg/modules/libfb.so /usr/lib/snail/libfb.so
+          ln -sf /usr/lib64/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
+          ln -sf /usr/lib64/xorg/modules/drivers/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
+          rm -f /usr/lib64/xorg/modules/extensions/nvidia/libglx.so
+          rm -f /usr/lib64/nvidia/libGL.so.1
+          ln -sf /usr/lib64/nvidia/libGL.so.[0-9][0-9]* /usr/lib/snail/libGL.so.1
+          ln -sf /usr/lib64/xorg/modules/extensions/nvidia/libglx.so.[0-9][0-9]* /usr/lib/snail/libglx.so
+      ;;
+
+      *)
+        echo "No rules for Your distribution. Please make a bug report."
+        exit -1
+      ;;
+    esac
   ;;
 
   *)

@@ -1,0 +1,8 @@
+[Unit]
+Description=Daemon to auto start/stop power up/down nVidia graphics.
+After=syslog.target
+
+[Service]
+ExecStart=/bin/bash -c '(nohup /usr/bin/X -ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9 &>/dev/null)&'
+ExecStop=/usr/sbin/snail.nv_pwr_off
+Type=forking

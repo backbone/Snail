@@ -10,9 +10,9 @@ install:
 	install bin/* ${DESTDIR}/${PREFIX}/bin
 	install -d ${DESTDIR}/${PREFIX}/sbin
 	install sbin/* ${DESTDIR}/${PREFIX}/sbin
-	install -d ${DESTDIR}/${PREFIX}/lib
-	install lib/*.so ${DESTDIR}/${PREFIX}/lib
-	install -d ${DESTDIR}/${PREFIX}/lib/snail
+	install -d ${DESTDIR}/${PREFIX}/lib64
+	install lib64/*.so ${DESTDIR}/${PREFIX}/lib64
+	install -d ${DESTDIR}/${PREFIX}/lib64/snail
 	install -d ${DESTDIR}/${PREFIX}/share
 	install -d ${DESTDIR}/${PREFIX}/share/snail
 	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d
@@ -21,10 +21,10 @@ install:
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
 	rm -f ${DESTDIR}/etc/init.d/snail*
-	rm -f ${DESTDIR}/${PREFIX}/lib/libdlfaker.so
-	rm -f ${DESTDIR}/${PREFIX}/lib/libgefaker.so
-	rm -f ${DESTDIR}/${PREFIX}/lib/librrfaker.so
-	rm -rf ${DESTDIR}/${PREFIX}/lib/snail
+	rm -f ${DESTDIR}/${PREFIX}/lib64/libdlfaker.so
+	rm -f ${DESTDIR}/${PREFIX}/lib64/libgefaker.so
+	rm -f ${DESTDIR}/${PREFIX}/lib64/librrfaker.so
+	rm -rf ${DESTDIR}/${PREFIX}/lib64/snail
 	rm -rf ${DESTDIR}/${PREFIX}/share/snail
 	rm -f ${DESTDIR}/${PREFIX}/bin/nvrun
 	rm -f ${DESTDIR}/${PREFIX}/bin/snail.vglrun

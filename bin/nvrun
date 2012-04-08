@@ -8,14 +8,13 @@ let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 LOCK_FILE=/tmp/.snail.lock
 FIFO_FILE=/tmp/.snail.fifo
 
-
 {
   echo -n > $FIFO_FILE &
   flock -w $TIMEOUT -s 9
 
   if [ 0 -eq $? ]; then
 	echo "Running $@ on nVidia"
-	export LD_LIBRARY_PATH=/usr/lib/snail:/usr/lib/snail/lib
+	export LD_LIBRARY_PATH=/usr/lib/snail
 	snail.vglrun -d :1 "$@"
 	echo "Application $@ was performed on nVidia"
 

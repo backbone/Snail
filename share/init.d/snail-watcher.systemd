@@ -1,0 +1,10 @@
+[Unit]
+Description=Daemon to auto start/stop power up/down nVidia graphics.
+After=syslog.target
+
+[Service]
+ExecStart=/bin/bash -c '(nohup /usr/sbin/snail-watcher.sh &>/dev/null)&'
+Type=forking
+
+[Install]
+WantedBy=multi-user.target

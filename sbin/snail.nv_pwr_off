@@ -1,95 +1,116 @@
 #!/bin/bash
 
-model=`dmidecode $@ -s system-product-name`
+TRIES=8
 
-let retry=8
-while [ 0 -lt $retry ]; do
+lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
 
-	case "$model" in
-		M11XR2)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.P0P2.PEGP.NVOP 0 0x100 0x1A {255,255,255,255}' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.P0P2.PEGP._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		1015PN)
-			modprobe -r nvidia \
-			&& echo '\OSGS 0x03' > /proc/acpi/call \
-			&& exit 0
-		;;
-		1215N)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.P0P4.GFX0._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.P0P4.GFX0._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG1.GFX0.DOFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		N61Jv|N73Sv)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEGR.GFX0.DOFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		P31Jg)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG1.GFX0._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		U43Jc)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.RP00.VGA._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.RP00.VGA._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		UL30Vt)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.P0P1.VGA._OFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		E6420)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG0.VID._OFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		InspironN5110|XPSL702X)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG0.PEGP._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.PEG0.PEGP._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		Vostro3300|Vostro3500)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.P0P1.PEGP._OFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		XPS15)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG0.PEGP._OFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		ThinkPadT410)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.PEG.VID._OFF' > /proc/acpi/call \
-			&& exit 0
-		;;
-		ThinkPadT420)
-			modprobe -r nvidia \
-			&& echo '\_SB.PCI0.PEG.VID._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-			&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
-			&& exit 0
-		;;
-		*) echo "Snail: unknown Notebook model: $model"; exit -1
-		;;
-	esac
+# Trying vgaswitcheroo method
+if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	let tries=$TRIES
+	while [ 0 -lt $tries ]; do
+		modprobe -r nvidia \
+		&& echo 'OFF DIS' > /sys/kernel/debug/vgaswitcheroo/switch \
+		&& exit 0
 
-	sleep 0.2
-	let retry--
-	echo "retry countdown: $retry"
-done
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+	echo "Cann't power off nVidia chip ;-("
+	exit -1
+fi
 
+# Trying acpi_call method
+if [ -f /proc/acpi/call ]; then
+	model=`dmidecode $@ -s system-product-name`
+	tries=$TRIES
+	while [ 0 -lt $tries ]; do
+		case "$model" in
+			M11XR2)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.P0P2.PEGP.NVOP 0 0x100 0x1A {255,255,255,255}' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.P0P2.PEGP._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			1015PN)
+				modprobe -r nvidia \
+				&& echo '\OSGS 0x03' > /proc/acpi/call \
+				&& exit 0
+			;;
+			1215N)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.P0P4.GFX0._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.P0P4.GFX0._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG1.GFX0.DOFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			N61Jv|N73Sv)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEGR.GFX0.DOFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			P31Jg)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG1.GFX0._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			U43Jc)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.RP00.VGA._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.RP00.VGA._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			UL30Vt)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.P0P1.VGA._OFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			E6420)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG0.VID._OFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			InspironN5110|XPSL702X)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG0.PEGP._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.PEG0.PEGP._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			Vostro3300|Vostro3500)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.P0P1.PEGP._OFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			XPS15)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG0.PEGP._OFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			ThinkPadT410)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.PEG.VID._OFF' > /proc/acpi/call \
+				&& exit 0
+			;;
+			ThinkPadT420)
+				modprobe -r nvidia \
+				&& echo '\_SB.PCI0.PEG.VID._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+				&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
+				&& exit 0
+			;;
+			*) echo "Snail: unknown Notebook model: $model"; exit -1
+			;;
+		esac
+
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+fi
+
+echo "Cann't power off nVidia chip"
 exit -1
-
