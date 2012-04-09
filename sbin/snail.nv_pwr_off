@@ -9,7 +9,7 @@ if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
 	let tries=$TRIES
 	while [ 0 -lt $tries ]; do
 		modprobe -r nvidia \
-		&& echo 'OFF DIS' > /sys/kernel/debug/vgaswitcheroo/switch \
+		&& echo 'OFF' > /sys/kernel/debug/vgaswitcheroo/switch \
 		&& exit 0
 
 		sleep 0.01

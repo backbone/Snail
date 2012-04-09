@@ -8,7 +8,7 @@ lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
 if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
 	let tries=$TRIES
 	while [ 0 -lt $tries ]; do
-		echo 'ON DIS' > /sys/kernel/debug/vgaswitcheroo/switch \
+		echo 'ON' > /sys/kernel/debug/vgaswitcheroo/switch \
 		&& modprobe nvidia \
 		&& exit 0
 
