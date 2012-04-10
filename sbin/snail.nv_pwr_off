@@ -4,22 +4,6 @@ TRIES=8
 
 lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
 
-# Trying vgaswitcheroo method
-if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
-	let tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		modprobe -r nvidia \
-		&& echo 'OFF' > /sys/kernel/debug/vgaswitcheroo/switch \
-		&& exit 0
-
-		sleep 0.01
-		let tries--
-		echo "tries left: $tries"
-	done
-	echo "Cann't power off nVidia chip ;-("
-	exit -1
-fi
-
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
 	model=`dmidecode $@ -s system-product-name`
@@ -105,6 +89,20 @@ if [ -f /proc/acpi/call ]; then
 			*) echo "Snail: unknown Notebook model: $model"; exit -1
 			;;
 		esac
+
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+fi
+
+# Trying vgaswitcheroo method
+if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	let tries=$TRIES
+	while [ 0 -lt $tries ]; do
+		modprobe -r nvidia \
+		&& echo 'OFF' > /sys/kernel/debug/vgaswitcheroo/switch \
+		&& exit 0
 
 		sleep 0.01
 		let tries--
