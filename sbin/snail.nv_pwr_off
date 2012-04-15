@@ -4,6 +4,20 @@ TRIES=8
 
 lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
 
+# Trying bbswitch method
+if [ -f /proc/acpi/bbswitch ]; then
+	let tries=$TRIES
+	while [ 0 -lt $tries ]; do
+		modprobe -r nvidia \
+		&& echo 'OFF' > /proc/acpi/bbswitch \
+		&& exit 0
+
+		sleep 0.01
+		let tries--
+		echo "tries left: $tries"
+	done
+fi
+
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
 	model=`dmidecode $@ -s system-product-name`
