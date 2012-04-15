@@ -21,6 +21,7 @@ install:
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
 	rm -f ${DESTDIR}/etc/init.d/snail*
+	rm -f ${DESTDIR}/etc/systemd/system/snail*
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libdlfaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libgefaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/librrfaker.so
