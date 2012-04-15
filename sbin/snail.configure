@@ -1,20 +1,17 @@
 #!/bin/bash
 
 echo "Test for acpi_call/vgaswitcheroo"
-if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
+modprobe bbswitch &>/dev/null
+modprobe acpi_call &>/dev/null
+if [ -f /proc/acpi/bbswitch ]; then
+    echo "bbswitch is OK! ;-)"
+elif [ -f /proc/acpi/call ]; then
+    echo "acpi_call is OK! ;-)"
+elif [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
     echo "vgaswitcheroo is OK! ;-)"
 else
-  if [ -f /proc/acpi/call ]; then
-    echo "acpi_call is OK! ;-)"
-  else
-    modprobe acpi_call
-    if [ -f /proc/acpi/call ]; then
-      echo "Warning: Please configure acpi_call module for autoloading on system startup!"
-    else
-      echo "No vgaswitcheroo/acpi_call found. Please configure/install one of them! ;-("
+      echo "No bbswitch/acpi_call/vgaswitcheroo found. Please configure/install one of them! ;-("
       exit -1
-    fi
-  fi
 fi
 
 echo "Test for nVidia driver"
@@ -103,6 +100,7 @@ case "$DISTRIB_ID" in
     eselect rc stop snail-xserver
     eselect rc restart snail-watcher
  
+    grep bbswitch /etc/conf.d/modules || echo 'modules="${modules} bbswitch' >> /etc/conf.d/modules
     grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
 
     eselect opengl set xorg-x11
@@ -127,6 +125,7 @@ case "$DISTRIB_ID" in
     /etc/init.d/snail-xserver stop
     /etc/init.d/snail-watcher start
  
+    grep '^bbswitch$' /etc/modules || echo bbswitch >> /etc/modules
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
     case "$DISTRIB_RELEASE" in
       6.?.?)
@@ -184,7 +183,8 @@ case "$DISTRIB_ID" in
   "fedora")
     case "$DISTRIB_CODENAME" in
       Verne)
-        echo acpi_call > /etc/modules-load.d/snail.conf
+          echo bbswitch > /etc/modules-load.d/snail.conf
+          echo acpi_call > /etc/modules-load.d/snail.conf
           cp -f $SNAIL_INIT_D_PATH/snail-watcher.systemd /etc/systemd/system/snail-watcher.service
           cp -f $SNAIL_INIT_D_PATH/snail-xserver.systemd /etc/systemd/system/snail-xserver.service
           systemctl --system daemon-reload
