@@ -100,8 +100,8 @@ case "$DISTRIB_ID" in
     eselect rc stop snail-xserver
     eselect rc restart snail-watcher
  
-    grep bbswitch /etc/conf.d/modules || echo 'modules="${modules} bbswitch' >> /etc/conf.d/modules
-    grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call' >> /etc/conf.d/modules
+    grep bbswitch /etc/conf.d/modules || echo 'modules="${modules} bbswitch"' >> /etc/conf.d/modules
+    grep acpi_call /etc/conf.d/modules || echo 'modules="${modules} acpi_call"' >> /etc/conf.d/modules
 
     eselect opengl set xorg-x11
     for arch in 32bit 64bit; do
