@@ -12,7 +12,10 @@ Tested distros
     Gentoo amd64
     Debian Squeeze amd64
     Debian Wheezy amd64
+    Fedora 16 (Verne) x86_64
 
-Supported Models: M11XR2, 1015PN, 1215N, K42Jc, K52Jc, N53Jf, N53Jg, N71Jv, N73Jf, P52Jc, PL80Jt, U30Jc, U33Jc, U35Jc, U36Jc, UL80Jt, N53Sn, U41Sv, N53Sv, N61Jv, N73Sv, P31Jg, U43Jc, UL30Vt, E6420, InspironN5110, XPSL702X, Vostro3300, Vostro3500, XPS15, ThinkPadT410, ThinkPadT420.
+Supported Models: All that supported by bbswitch, vgaswitcheroo (most of laptops with recent Linux kernel) + several by acpi_call (M11XR2, 1015PN, 1215N,
+K42Jc, K52Jc, N53Jf, N53Jg, N71Jv, N73Jf, P52Jc, PL80Jt, U30Jc, U33Jc, U35Jc, U36Jc, UL80Jt, N53Sn, U41Sv, N53Sv, N61Jv, N73Sv, P31Jg, U43Jc, UL30Vt, E6420,
+InspironN5110, XPSL702X, Vostro3300, Vostro3500, XPS15, ThinkPadT410, ThinkPadT420).
 
 Video on YouTube: http://www.youtube.com/watch?v=c6RH69j-gMY&feature=plcp&context=C3f5cbeeUDOEgsToPDskLOX8DnELkwYsi2QZ7_phwJ
