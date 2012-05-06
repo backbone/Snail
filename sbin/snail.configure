@@ -212,7 +212,7 @@ case "$DISTRIB_ID" in
 esac
 
 echo "Creating backups of original xorg.conf.* files and replacing with snail's versions..."
-if [[ ! -f /etc/X11/xorg.conf.nvidia.snail && ! -f /etc/X11/xorg.conf.intel.snail ]]; then
+if [[ ! -f /etc/X11/xorg.conf.nvidia.snail && ! -f /etc/X11/xorg.conf.intel.snail && "`grep \"Driver *\\"nvidia\\"\" /etc/X11/xorg.conf`" == "" ]]; then
 	[[ -f /etc/X11/xorg.conf && ! -f /etc/X11/xorg.conf.snail-bkp ]] && mv /etc/X11/xorg.conf /etc/X11/xorg.conf.snail-bkp
 	[[ -f /etc/X11/xorg.conf.intel && ! -f /etc/X11/xorg.conf.intel.snail-bkp ]] && mv /etc/X11/xorg.conf.intel /etc/X11/xorg.conf.intel.snail-bkp
 	[[ -f /etc/X11/xorg.conf.nvidia && ! -f /etc/X11/xorg.conf.nvidia.snail-bkp ]] && mv /etc/X11/xorg.conf.nvidia /etc/X11/xorg.conf.nvidia.snail-bkp
