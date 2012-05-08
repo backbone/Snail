@@ -38,7 +38,12 @@ DISTRIB_ID=
 DISTRIB_DESCRIPTION=
 DISTRIB_RELEASE=
 DISTRIB_CODENAME=
-if [ -f /etc/gentoo-release ]; then
+if [ -f /etc/lsb-release ]; then
+  DISTRIB_ID=`grep ^DISTRIB_ID /etc/lsb-release | cut -d= -f2`
+  DISTRIB_RELEASE=`grep ^DISTRIB_RELEASE /etc/lsb-release | cut -d= -f2`
+  DISTRIB_CODENAME=`grep ^DISTRIB_CODENAME /etc/lsb-release | cut -d= -f2`
+  DISTRIB_DESCRIPTION=`grep ^DISTRIB_DESCRIPTION /etc/lsb-release | cut -d= -f2`
+elif [ -f /etc/gentoo-release ]; then
   DISTRIB_ID=gentoo
   DISTRIB_DESCRIPTION=`cat /etc/gentoo-release`
   DISTRIB_RELEASE=${DISTRIB_DESCRIPTION##* }
@@ -74,6 +79,9 @@ elif [ -f /etc/fedora-release ]; then
   DISTRIB_RELEASE=${DISTRIB_RELEASE##* }
   DISTRIB_CODENAME=${DISTRIB_DESCRIPTION##*\(}
   DISTRIB_CODENAME=${DISTRIB_CODENAME%%\)*}
+elif [ -f /etc/issue ]; then
+  DISTRIB_ID=`cut -d" " -f1 /etc/issue | head -n1`
+  DISTRIB_RELEASE=`cut -d" " -f2 /etc/issue | head -n1`
 else
   DISTRIB_DESCRIPTION=`cat /etc/*release* | head -n1`
   DISTRIB_ID=`echo ${DISTRIB_DESCRIPTION%% *} | tr 'A-Z' 'a-z'`
