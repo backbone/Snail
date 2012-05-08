@@ -201,24 +201,17 @@ case "$DISTRIB_ID" in
 
     case "$DISTRIB_RELEASE" in
       12.04)
-          # rm -f /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
-          # ln -sf /usr/lib/mesa-diverted/x86_64-linux-gnu/libGL.so.1 /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
-          # rm -f /etc/alternatives/glx--linux-libglx.so
-          # ln -sf /usr/lib/xorg/modules/extensions/libglx.so /etc/alternatives/glx--linux-libglx.so
-
-          # ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
-          # ln -sf /usr/lib/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
-
-          # ln -sf /usr/lib/x86_64-linux-gnu/nvidia/current/libGL.so.1 /usr/lib/snail/libGL.so.1
-          # ln -sf /etc/alternatives/nvidia/libglx.so /usr/lib/snail/libglx.so
-          # ln -sf /usr/lib/nvidia/nvidia/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
-
           rm -f /etc/alternatives/x86_64-linux-gnu_gl_conf
           ln -sf /usr/lib/x86_64-linux-gnu/mesa/ld.so.conf /etc/alternatives/x86_64-linux-gnu_gl_conf
           ldconfig
           rm -f /usr/lib/x86_64-linux-gnu/xorg/extra-modules
-          #ln -sf /usr/lib/x86_64-linux-gnu/mesa /usr/lib/x86_64-linux-gnu/xorg/extra-modules
-          #ln -sf /usr/lib/opengl/nvidia/lib/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/
+          ln -sf /usr/lib/nvidia-current/libGL.so.1 /usr/lib/snail/libGL.so.1
+          ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
+          ln -sf /usr/lib/nvidia-current/xorg/libglx.so /usr/lib/snail/libglx.so
+          ln -sf /usr/lib/nvidia-current/libnvidia-glcore.so.[0-9][0-9]* /usr/lib/snail/
+          ln -sf /usr/lib/nvidia-current/tls/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/
+          ln -sf /usr/lib/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
+          ln -sf /usr/lib/nvidia-current/xorg/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
       ;;
 
       *)
@@ -261,7 +254,10 @@ case "$DISTRIB_ID" in
 esac
 
 echo "Creating backups of original xorg.conf.* files and replacing with snail's versions..."
-if [[ ! -f /etc/X11/xorg.conf.nvidia.snail && ! -f /etc/X11/xorg.conf.intel.snail || "`grep \"Driver *\\"intel\\"\" /etc/X11/xorg.conf`" == "" ]]; then
+if [[ ! -f /etc/X11/xorg.conf.nvidia.snail \
+      && ! -f /etc/X11/xorg.conf.intel.snail \
+      || "`grep \"Driver *\\"intel\\"\" /etc/X11/xorg.conf`" == "" \
+      || "`grep 'BusID *"PCI:[0-9]:[0-9]:[0-9]' /etc/X11/xorg.conf{,.nvidia}`" != 2 ]]; then
 	[[ -f /etc/X11/xorg.conf && ! -f /etc/X11/xorg.conf.snail-bkp ]] && mv /etc/X11/xorg.conf /etc/X11/xorg.conf.snail-bkp
 	[[ -f /etc/X11/xorg.conf.intel && ! -f /etc/X11/xorg.conf.intel.snail-bkp ]] && mv /etc/X11/xorg.conf.intel /etc/X11/xorg.conf.intel.snail-bkp
 	[[ -f /etc/X11/xorg.conf.nvidia && ! -f /etc/X11/xorg.conf.nvidia.snail-bkp ]] && mv /etc/X11/xorg.conf.nvidia /etc/X11/xorg.conf.nvidia.snail-bkp
@@ -271,7 +267,7 @@ if [[ ! -f /etc/X11/xorg.conf.nvidia.snail && ! -f /etc/X11/xorg.conf.intel.snai
 
 	echo "Recognizing BusID of both chips and set it in xorg.conf.* files..."
 	BusIDIntel="PCI:`lspci | grep VGA | grep Intel | cut -d" " -f1 | sed 's~\.~\:~g ; s~0\([0-9]\)~\1~g'`"
-	BusIDNvidia="PCI:`lspci | grep VGA | grep nVidia | cut -d" " -f1 | sed 's~\.~\:~g ; s~0\([0-9]\)~\1~g'`"
+	BusIDNvidia="PCI:`lspci | grep VGA | grep -i nVidia | cut -d" " -f1 | sed 's~\.~\:~g ; s~0\([0-9]\)~\1~g'`"
 	sed -i "s~BusIDIntel~$BusIDIntel~" /etc/X11/xorg.conf.intel
 	sed -i "s~BusIDNvidia~$BusIDNvidia~" /etc/X11/xorg.conf.nvidia
 fi
