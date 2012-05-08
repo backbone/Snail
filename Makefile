@@ -10,26 +10,27 @@ install:
 	install bin/* ${DESTDIR}/${PREFIX}/bin
 	install -d ${DESTDIR}/${PREFIX}/sbin
 	install sbin/* ${DESTDIR}/${PREFIX}/sbin
-	-if test x86_64 = `uname -m` ; then \
-		install -d ${DESTDIR}/${PREFIX}/lib64; \
-		install lib64/*.so ${DESTDIR}/${PREFIX}/lib64; \
-		install -d ${DESTDIR}/${PREFIX}/lib64/snail; \
-		if test -d /usr/lib64 -a ! -d /usr/lib ; then \
-			ln -sf lib64 /usr/lib; \
+	if test x86_64 = `uname -m` ; then \
+		if test -d /usr/lib64 ; then \
+			install -d ${DESTDIR}/${PREFIX}/lib64; \
+			install lib64/*.so ${DESTDIR}/${PREFIX}/lib64; \
 		else \
-			if test -d /usr/lib -a ! -d /usr/lib64 ; then \
-				ln -sf lib /usr/lib64; \
-			fi; \
+			install -d ${DESTDIR}/${PREFIX}/lib; \
+			install lib64/*.so ${DESTDIR}/${PREFIX}/lib; \
 		fi; \
+		if test ! -d /usr/lib ; then \
+			ln -sf lib64 /usr/lib; \
+		fi; \
+		install -d ${DESTDIR}/${PREFIX}/lib/snail; \
 	else \
 		install -d ${DESTDIR}/${PREFIX}/lib; \
 		install lib32/*.so ${DESTDIR}/${PREFIX}/lib; \
 		install -d ${DESTDIR}/${PREFIX}/lib/snail; \
-	fi
+	fi; \
 	install -d ${DESTDIR}/${PREFIX}/share; \
 	install -d ${DESTDIR}/${PREFIX}/share/snail; \
 	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d; \
-	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d; \
+	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d
 
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
