@@ -10,7 +10,7 @@ install:
 	install bin/* ${DESTDIR}/${PREFIX}/bin
 	install -d ${DESTDIR}/${PREFIX}/sbin
 	install sbin/* ${DESTDIR}/${PREFIX}/sbin
-	-if test x86_64 == `uname -m` ; then \
+	-if test x86_64 = `uname -m` ; then \
 		install -d ${DESTDIR}/${PREFIX}/lib64; \
 		install lib64/*.so ${DESTDIR}/${PREFIX}/lib64; \
 		install -d ${DESTDIR}/${PREFIX}/lib64/snail; \
