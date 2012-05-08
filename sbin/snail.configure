@@ -38,16 +38,17 @@ DISTRIB_ID=
 DISTRIB_DESCRIPTION=
 DISTRIB_RELEASE=
 DISTRIB_CODENAME=
-if [ -f /etc/lsb-release ]; then
-  DISTRIB_ID=`grep ^DISTRIB_ID /etc/lsb-release | cut -d= -f2`
-  DISTRIB_RELEASE=`grep ^DISTRIB_RELEASE /etc/lsb-release | cut -d= -f2`
-  DISTRIB_CODENAME=`grep ^DISTRIB_CODENAME /etc/lsb-release | cut -d= -f2`
-  DISTRIB_DESCRIPTION=`grep ^DISTRIB_DESCRIPTION /etc/lsb-release | cut -d= -f2`
-elif [ -f /etc/gentoo-release ]; then
+if [ -f /etc/gentoo-release ]; then
   DISTRIB_ID=gentoo
   DISTRIB_DESCRIPTION=`cat /etc/gentoo-release`
   DISTRIB_RELEASE=${DISTRIB_DESCRIPTION##* }
   DISTRIB_CODENAME=gentoo
+elif [ -f /etc/lsb-release ]; then
+  DISTRIB_ID=`grep ^DISTRIB_ID /etc/lsb-release | cut -d= -f2`
+  DISTRIB_RELEASE=`grep ^DISTRIB_RELEASE /etc/lsb-release | cut -d= -f2`
+  DISTRIB_CODENAME=`grep ^DISTRIB_CODENAME /etc/lsb-release | cut -d= -f2`
+  DISTRIB_DESCRIPTION=`grep ^DISTRIB_DESCRIPTION /etc/lsb-release | cut -d= -f2`
+
 elif [ -f /etc/debian_version ]; then
   DISTRIB_ID=debian
   DISTRIB_RELEASE=`cat /etc/debian_version`
