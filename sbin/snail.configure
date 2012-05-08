@@ -200,7 +200,7 @@ case "$DISTRIB_ID" in
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
 
     case "$DISTRIB_RELEASE" in
-      12.04)
+      12.*)
           rm -f /etc/alternatives/x86_64-linux-gnu_gl_conf
           ln -sf /usr/lib/x86_64-linux-gnu/mesa/ld.so.conf /etc/alternatives/x86_64-linux-gnu_gl_conf
           ldconfig
