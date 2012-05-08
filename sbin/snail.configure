@@ -217,8 +217,7 @@ case "$DISTRIB_ID" in
           ln -sf /usr/lib/x86_64-linux-gnu/mesa/ld.so.conf /etc/alternatives/x86_64-linux-gnu_gl_conf
           rm -f /usr/lib/x86_64-linux-gnu/xorg/extra-modules
           #ln -sf /usr/lib/x86_64-linux-gnu/mesa /usr/lib/x86_64-linux-gnu/xorg/extra-modules
-
-
+          ldconfig
       ;;
 
       *)
