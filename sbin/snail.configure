@@ -134,6 +134,7 @@ case "$DISTRIB_ID" in
  
     grep '^bbswitch$' /etc/modules || echo bbswitch >> /etc/modules
     grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
+
     case "$DISTRIB_RELEASE" in
       6.?.?)
         # nVidia driver installed from Debian repositories
@@ -178,6 +179,46 @@ case "$DISTRIB_ID" in
           ln -sf /usr/lib/x86_64-linux-gnu/nvidia/current/libGL.so.1 /usr/lib/snail/libGL.so.1
           ln -sf /etc/alternatives/nvidia/libglx.so /usr/lib/snail/libglx.so
           ln -sf /usr/lib/nvidia/nvidia/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
+      ;;
+
+      *)
+        echo "No rules for Your distribution. Please make a bug report."
+        exit -1
+      ;;
+    esac
+  ;;
+
+  "Ubuntu")
+    cp -f $SNAIL_INIT_D_PATH/snail-watcher.sysv /etc/init.d/snail-watcher
+    cp -f $SNAIL_INIT_D_PATH/snail-xserver.sysv /etc/init.d/snail-xserver
+    update-rc.d snail-xserver remove
+    update-rc.d snail-watcher defaults
+    /etc/init.d/snail-xserver stop
+    /etc/init.d/snail-watcher start
+ 
+    grep '^bbswitch$' /etc/modules || echo bbswitch >> /etc/modules
+    grep '^acpi_call$' /etc/modules || echo acpi_call >> /etc/modules
+
+    case "$DISTRIB_RELEASE" in
+      12.04)
+          # rm -f /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
+          # ln -sf /usr/lib/mesa-diverted/x86_64-linux-gnu/libGL.so.1 /etc/alternatives/glx--libGL.so.1-x86_64-linux-gnu
+          # rm -f /etc/alternatives/glx--linux-libglx.so
+          # ln -sf /usr/lib/xorg/modules/extensions/libglx.so /etc/alternatives/glx--linux-libglx.so
+
+          # ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
+          # ln -sf /usr/lib/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
+
+          # ln -sf /usr/lib/x86_64-linux-gnu/nvidia/current/libGL.so.1 /usr/lib/snail/libGL.so.1
+          # ln -sf /etc/alternatives/nvidia/libglx.so /usr/lib/snail/libglx.so
+          # ln -sf /usr/lib/nvidia/nvidia/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
+
+          rm -f /etc/alternatives/x86_64-linux-gnu_gl_conf
+          ln -sf /usr/lib/x86_64-linux-gnu/mesa/ld.so.conf /etc/alternatives/x86_64-linux-gnu_gl_conf
+          rm -f /usr/lib/x86_64-linux-gnu/xorg/extra-modules
+          #ln -sf /usr/lib/x86_64-linux-gnu/mesa /usr/lib/x86_64-linux-gnu/xorg/extra-modules
+
+
       ;;
 
       *)
