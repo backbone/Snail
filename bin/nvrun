@@ -15,7 +15,7 @@ FIFO_FILE=/tmp/.snail.fifo
   if [ 0 -eq $? ]; then
 	echo "Running $@ on nVidia"
 	export LD_LIBRARY_PATH=/usr/lib/snail
-	snail.vglrun -d :1 "$@"
+	snail.vglrun -d :8293 "$@"
 	echo "Application $@ was performed on nVidia"
 
   elif [ 0 -ne $INTEL_IF_FAIL ]; then

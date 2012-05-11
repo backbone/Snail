@@ -17,7 +17,7 @@
 
 PATH=$PATH:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 DAEMON=/usr/bin/X
-DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :1 vt9"
+DAEMON_ARGS="-ac -config /etc/X11/xorg.conf.nvidia -sharevts -modulepath /usr/lib/snail -nolisten tcp -noreset :8293 vt9"
 PIDFILE=/var/run/snail-xserver.pid
 
 # Get lsb functions
