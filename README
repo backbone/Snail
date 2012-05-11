@@ -13,6 +13,7 @@ Tested distros
     Debian Squeeze amd64
     Debian Wheezy amd64
     Fedora 16 (Verne) x86_64
+    Ubuntu 12.04 x86_64
 
 Supported Models: All that supported by bbswitch, vgaswitcheroo (most of laptops with recent Linux kernel) + several by acpi_call (M11XR2, 1015PN, 1215N,
 K42Jc, K52Jc, N53Jf, N53Jg, N71Jv, N73Jf, P52Jc, PL80Jt, U30Jc, U33Jc, U35Jc, U36Jc, UL80Jt, N53Sn, U41Sv, N53Sv, N61Jv, N73Sv, P31Jg, U43Jc, UL30Vt, E6420,
