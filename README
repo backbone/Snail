@@ -5,6 +5,7 @@ Features
     Auto power off for second X-server and nVidia chip.
     Easy installation (look at Wiki).
     Multiuser access.
+    Multilib support.
     Run in a way nvrun app.
 
 Tested distros
