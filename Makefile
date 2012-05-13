@@ -46,6 +46,9 @@ uninstall:
 	rm -f ${DESTDIR}/${PREFIX}/lib/libgefaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib/librrfaker.so
 	rm -rf ${DESTDIR}/${PREFIX}/lib/snail
+	rm -f ${DESTDIR}/${PREFIX}/lib32/libdlfaker.so
+	rm -f ${DESTDIR}/${PREFIX}/lib32/libgefaker.so
+	rm -f ${DESTDIR}/${PREFIX}/lib32/librrfaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libdlfaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/libgefaker.so
 	rm -f ${DESTDIR}/${PREFIX}/lib64/librrfaker.so
