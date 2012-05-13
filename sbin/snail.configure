@@ -118,12 +118,12 @@ case "$DISTRIB_ID" in
       done;
     done
     ln -sf /usr/lib/opengl/nvidia/lib/libGL.so.[0-9][0-9]* /usr/lib/snail/libGL.so.1
-    ln -sf /usr/lib32/opengl/nvidia/lib/libGL.so.[0-9][0-9]* /usr/lib/snail/lib32/libGL.so
+    ln -sf /usr/lib32/opengl/nvidia/lib/libGL.so.1 /usr/lib/snail/lib32/libGL.so.1
     ln -sf /usr/lib/xorg/modules/libfb.so /usr/lib/snail/libfb.so
     ln -sf /usr/lib/xorg/modules/libwfb.so /usr/lib/snail/libwfb.so
     ln -sf /usr/lib/opengl/nvidia/extensions/libglx.so.[0-9][0-9]* /usr/lib/snail/libglx.so
     ln -sf /usr/lib/opengl/nvidia/lib/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/
-    ln -sf /usr/lib32/opengl/nvidia/lib/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/lib32/libnvidia-tls.so
+    ln -sf /usr/lib32/opengl/nvidia/lib/libnvidia-tls.so /usr/lib/snail/lib32/libnvidia-tls.so
     ln -sf /usr/lib/xorg/modules/drivers/nvidia_drv.so /usr/lib/snail/nvidia_drv.so
   ;;
 

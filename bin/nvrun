@@ -15,14 +15,15 @@ FIFO_FILE=/tmp/.snail.fifo
   if [ 0 -eq $? ]; then
 	echo "Running $@ on nVidia"
 	export LD_LIBRARY_PATH=/usr/lib/snail
-	LD_PRELOAD="/usr/lib/snail/lib32/libGL.so /usr/lib/snail/lib32/libnvidia-tls.so" \
+	LD_PRELOAD="/usr/lib/snail/lib32/libGL.so.1 /usr/lib/snail/lib32/libnvidia-tls.so" \
 	snail.vglrun -d :8293 "$@" 2>/dev/null
 	echo "Application $@ was performed on nVidia"
 
   elif [ 0 -ne $INTEL_IF_FAIL ]; then
-	echo "Running $@ on Intel"
-	"$@"
-	echo "Application $@ was performed on Intel"
+  	echo "Failed to run $@ on nVidia ;-("
+	# echo "Running $@ on Intel"
+	# "$@"
+	# echo "Application $@ was performed on Intel"
   fi
 
   flock -u 9
