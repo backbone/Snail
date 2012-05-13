@@ -231,7 +231,8 @@ case "$DISTRIB_ID" in
           rm -f /etc/alternatives/i386-linux-gnu_gl_conf
           ln -sf /usr/lib/i386-linux-gnu/mesa/ld.so.conf /etc/alternatives/i386-linux-gnu_gl_conf
           ln -sf /usr/lib32/nvidia-current/libGL.so.1 /usr/lib/snail/lib32/libGL.so.1
-          ln -sf /usr/lib32/nvidia-current/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/lib32/libnvidia-tls.so
+          ln -sf /usr/lib32/nvidia-current/tls/libnvidia-tls.so.[0-9][0-9]* /usr/lib/snail/lib32/libnvidia-tls.so
+          ln -sf /usr/lib32/nvidia-current/libnvidia-glcore.so.[0-9][0-9]* /usr/lib/snail/lib32/libnvidia-glcore.so
       ;;
 
       *)
