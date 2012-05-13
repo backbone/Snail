@@ -31,8 +31,8 @@ rm -f $FIFO_FILE && mkfifo --mode 660 $FIFO_FILE && chgrp video $FIFO_FILE # cre
     read <$FIFO_FILE
     snail.nv_pwr_on && $XSERVER_START_CMD # starting X server
     flock -u 9
-    flock 9
     echo >$FIFO_FILE | cat $FIFO_FILE >/dev/null # flush fifo
+    flock 9
     $XSERVER_STOP_CMD && snail.nv_pwr_off # stopping X server
   done
 } 9>$LOCK_FILE
