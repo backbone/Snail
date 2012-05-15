@@ -133,6 +133,7 @@ case "$DISTRIB_ID" in
     update-rc.d snail-xserver remove
     update-rc.d snail-watcher defaults
     /etc/init.d/snail-xserver stop
+    /etc/init.d/snail-watcher stop
     /etc/init.d/snail-watcher start
  
     grep '^bbswitch$' /etc/modules || echo bbswitch >> /etc/modules
@@ -209,6 +210,7 @@ case "$DISTRIB_ID" in
     update-rc.d snail-xserver remove
     update-rc.d snail-watcher defaults
     /etc/init.d/snail-xserver stop
+    /etc/init.d/snail-watcher stop
     /etc/init.d/snail-watcher start
  
     grep '^bbswitch$' /etc/modules || echo bbswitch >> /etc/modules
@@ -250,6 +252,7 @@ case "$DISTRIB_ID" in
           cp -f $SNAIL_INIT_D_PATH/snail-watcher.systemd /etc/systemd/system/snail-watcher.service
           cp -f $SNAIL_INIT_D_PATH/snail-xserver.systemd /etc/systemd/system/snail-xserver.service
           systemctl --system daemon-reload
+          systemctl stop snail-xserver.service
           systemctl stop snail-watcher.service
           systemctl start snail-watcher.service
           systemctl enable snail-watcher.service
