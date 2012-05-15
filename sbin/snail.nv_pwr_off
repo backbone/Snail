@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TRIES=128
+TRIES=8
 
 lsmod | grep '^nouveau ' >/dev/null && rmmod -f nouveau &>/dev/null
 
