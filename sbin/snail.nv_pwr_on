@@ -1,134 +1,81 @@
 #!/bin/bash
 
-TRIES=8
-
-lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
+# lsmod | grep '^nouveau ' >/dev/null && modprobe -rf nouveau &>/dev/null
 
 # Trying bbswitch method
 if [ -f /proc/acpi/bbswitch ]; then
-	let tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		echo 'ON' > /proc/acpi/bbswitch \
-		&& modprobe nvidia \
-		&& exit 0
+	echo 'ON' > /proc/acpi/bbswitch
+	a=`cat /proc/acpi/bbswitch`
+	[ ON == ${a##* } ] && echo "nVidia chip powered ON using bbswitch" && exit 0
 
-		sleep 0.1
-		let tries--
-		echo "tries left: $tries"
-	done
-
-	echo "Cann't power on nVidia chip"
+	echo "Cann't power on nVidia chip using bbswitch"
 	exit -1
 fi
 
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
 	model=`dmidecode $@ -s system-product-name`
-	tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		case "$model" in
-			M11XR2)
-				echo '\_SB.PCI0.P0P2.PEGP._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			1015PN)
-				echo '\_SB.PCI0.P0P4.DGPU.DON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			1215N)
-				echo '\_SB.PCI0.P0P4.GFX0._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
-				echo '\_SB.PCI0.PEG1.GFX0.DON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			N53Sn|U41Sv|N53Sv)
-				echo '\_SB.PCI0.PEG0.GFX0.DON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			N61Jv|N73Sv)
-				echo '\_SB.PCI0.PEGR.GFX0.DON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			P31Jg)
-				echo '\_SB.PCI0.PEG1.GFX0._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			U43Jc)
-				echo '\_SB.PCI0.RP00.VGA._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			UL30Vt)
-				echo '\_SB.PCI0.P0P1.VGA._ON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			E6420)
-				echo '\_SB.PCI0.PEG0.VID._ON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			InspironN5110|XPSL702X)
-				echo '\_SB.PCI0.PEG0.PEGP._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			Vostro3300|Vostro3500)
-				echo '\_SB.PCI0.P0P1.PEGP._ON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			XPS15)
-				echo '\_SB.PCI0.PEG0.PEGP._ON' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			ThinkPadT410)
-				echo '\_SB.PCI0.PEG.VID._ON' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			ThinkPadT420)
-				echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call \
-				&& modprobe nvidia \
-				&& exit 0
-			;;
-			*) echo "Snail: unknown Notebook model: $model"; exit -1
-			;;
-		esac
+	case "$model" in
+		M11XR2)
+			echo '\_SB.PCI0.P0P2.PEGP._PS0' > /proc/acpi/call
+		;;
+		1015PN)
+			echo '\_SB.PCI0.P0P4.DGPU.DON' > /proc/acpi/call
+		;;
+		1215N)
+			echo '\_SB.PCI0.P0P4.GFX0._PS0' > /proc/acpi/call
+		;;
+		K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
+			echo '\_SB.PCI0.PEG1.GFX0.DON' > /proc/acpi/call
+		;;
+		N53Sn|U41Sv|N53Sv)
+			echo '\_SB.PCI0.PEG0.GFX0.DON' > /proc/acpi/call
+		;;
+		N61Jv|N73Sv)
+			echo '\_SB.PCI0.PEGR.GFX0.DON' > /proc/acpi/call
+		;;
+		P31Jg)
+			echo '\_SB.PCI0.PEG1.GFX0._PS0' > /proc/acpi/call
+		;;
+		U43Jc)
+			echo '\_SB.PCI0.RP00.VGA._PS0' > /proc/acpi/call
+		;;
+		UL30Vt)
+			echo '\_SB.PCI0.P0P1.VGA._ON' > /proc/acpi/call
+		;;
+		E6420)
+			echo '\_SB.PCI0.PEG0.VID._ON' > /proc/acpi/call
+		;;
+		InspironN5110|XPSL702X)
+			echo '\_SB.PCI0.PEG0.PEGP._PS0' > /proc/acpi/call
+		;;
+		Vostro3300|Vostro3500)
+			echo '\_SB.PCI0.P0P1.PEGP._ON' > /proc/acpi/call
+		;;
+		XPS15)
+			echo '\_SB.PCI0.PEG0.PEGP._ON' > /proc/acpi/call
+		;;
+		ThinkPadT410)
+			echo '\_SB.PCI0.PEG.VID._ON' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call
+		;;
+		ThinkPadT420)
+			echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call
+		;;
+		*) echo "Snail (acpi_call method): unknown Notebook model: $model"; exit -1
+		;;
+	esac
 
-		sleep 0.1
-		let tries--
-		echo "tries left: $tries"
-	done
-
-	echo "Cann't power on nVidia chip"
-	exit -1
+	echo "acpi_call used to power ON nVidia chip"
+	exit 0
 fi
 
 # Trying vgaswitcheroo method
 if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
-	let tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		echo 'ON' > /sys/kernel/debug/vgaswitcheroo/switch \
-		&& modprobe nvidia \
-		&& exit 0
+	echo 'ON' > /sys/kernel/debug/vgaswitcheroo/switch \
+	&& echo "nVidia chip powered ON using vgaswitcheroo" \
+	&& exit 0
 
-		sleep 0.1
-		let tries--
-		echo "tries left: $tries"
-	done
-
-	echo "Cann't power on nVidia chip"
+	echo "Cann't power on nVidia chip using vgaswitcheroo"
 	exit -1
 fi

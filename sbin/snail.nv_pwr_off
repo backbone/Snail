@@ -1,134 +1,85 @@
 #!/bin/bash
 
-TRIES=48
-
-lsmod | grep '^nouveau ' >/dev/null && rmmod -f nouveau &>/dev/null
+rmmod -w nvidia &>/dev/null
 
 # Trying bbswitch method
 if [ -f /proc/acpi/bbswitch ]; then
-	let tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-		&& echo 'OFF' > /proc/acpi/bbswitch \
-		&& exit 0
+	echo 'OFF' > /proc/acpi/bbswitch \
+	&& a=`cat /proc/acpi/bbswitch` \
+	&& [ OFF == ${a##* } ] \
+	&& echo "nVidia chip powered off using bbswitch" \
+	&& exit 0
 
-		sleep 0.2
-		let tries--
-		# echo "tries left: $tries"
-	done
-
-	echo "Cann't power off nVidia chip"
+	echo "Cann't power off nVidia chip using bbswitch"
 	exit -1
 fi
 
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
 	model=`dmidecode $@ -s system-product-name`
-	tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		case "$model" in
-			M11XR2)
-		                (! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.P0P2.PEGP.NVOP 0 0x100 0x1A {255,255,255,255}' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.P0P2.PEGP._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			1015PN)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\OSGS 0x03' > /proc/acpi/call \
-				&& exit 0
-			;;
-			1215N)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.P0P4.GFX0._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.P0P4.GFX0._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG1.GFX0.DOFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			N61Jv|N73Sv)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEGR.GFX0.DOFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			P31Jg)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG1.GFX0._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			U43Jc)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.RP00.VGA._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.RP00.VGA._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			UL30Vt)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.P0P1.VGA._OFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			E6420)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG0.VID._OFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			InspironN5110|XPSL702X)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG0.PEGP._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.PEG0.PEGP._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			Vostro3300|Vostro3500)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.P0P1.PEGP._OFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			XPS15)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG0.PEGP._OFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			ThinkPadT410)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.PEG.VID._OFF' > /proc/acpi/call \
-				&& exit 0
-			;;
-			ThinkPadT420)
-				(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-				&& echo '\_SB.PCI0.PEG.VID._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
-				&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
-				&& exit 0
-			;;
-			*) echo "Snail: unknown Notebook model: $model"; exit -1
-			;;
-		esac
+	case "$model" in
+		M11XR2)
+	                echo '\_SB.PCI0.P0P2.PEGP.NVOP 0 0x100 0x1A {255,255,255,255}' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.P0P2.PEGP._PS3' > /proc/acpi/call
+		;;
+		1015PN)
+			echo '\OSGS 0x03' > /proc/acpi/call
+		;;
+		1215N)
+			echo '\_SB.PCI0.P0P4.GFX0._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.P0P4.GFX0._PS3' > /proc/acpi/call
+		;;
+		K42Jc|K52Jc|N53Jf|N53Jg|N71Jv|N73Jf|P52Jc|PL80Jt|U30Jc|U33Jc|U35Jc|U36Jc|UL80Jt)
+			echo '\_SB.PCI0.PEG1.GFX0.DOFF' > /proc/acpi/call
+		;;
+		N61Jv|N73Sv)
+			echo '\_SB.PCI0.PEGR.GFX0.DOFF' > /proc/acpi/call
+		;;
+		P31Jg)
+			echo '\_SB.PCI0.PEG1.GFX0._PS3' > /proc/acpi/call
+		;;
+		U43Jc)
+			echo '\_SB.PCI0.RP00.VGA._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.RP00.VGA._PS3' > /proc/acpi/call
+		;;
+		UL30Vt)
+			echo '\_SB.PCI0.P0P1.VGA._OFF' > /proc/acpi/call
+		;;
+		E6420)
+			echo '\_SB.PCI0.PEG0.VID._OFF' > /proc/acpi/call
+		;;
+		InspironN5110|XPSL702X)
+			echo '\_SB.PCI0.PEG0.PEGP._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.PEG0.PEGP._PS3' > /proc/acpi/call
+		;;
+		Vostro3300|Vostro3500)
+			echo '\_SB.PCI0.P0P1.PEGP._OFF' > /proc/acpi/call
+		;;
+		XPS15)
+			echo '\_SB.PCI0.PEG0.PEGP._OFF' > /proc/acpi/call
+		;;
+		ThinkPadT410)
+			echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.PEG.VID._OFF' > /proc/acpi/call
+		;;
+		ThinkPadT420)
+			echo '\_SB.PCI0.PEG.VID._DSM {0xF8,0xD8,0x86,0xA4,0xDA,0x0B,0x1B,0x47,0xA7,0x2B,0x60,0x42,0xA6,0xB5,0xBE,0xE0} 0x100 0x1A {0x1,0x0,0x0,0x3}' > /proc/acpi/call \
+			&& echo '\_SB.PCI0.PEG.VID._PS3' > /proc/acpi/call
+		;;
+		*) echo "Snail: unknown Notebook model: $model"; exit -1
+		;;
+	esac
 
-		sleep 0.2
-		let tries--
-		# echo "tries left: $tries"
-	done
-
-	echo "Cann't power off nVidia chip"
-	exit -1
+	echo "acpi_call used to power OFF nVidia chip"
+	exit 0
 fi
 
 # Trying vgaswitcheroo method
 if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
-	let tries=$TRIES
-	while [ 0 -lt $tries ]; do
-		(! lsmod | grep '^nvidia ' &>/dev/null || rmmod nvidia &>/dev/null) \
-		&& echo 'OFF' > /sys/kernel/debug/vgaswitcheroo/switch \
-		&& exit 0
+	echo 'OFF' > /sys/kernel/debug/vgaswitcheroo/switch \
+	&& echo "nVidia chip powered off using vgaswitcheroo" \
+	&& exit 0
 
-		sleep 0.2
-		let tries--
-		echo "tries left: $tries"
-	done
-
-	echo "Cann't power off nVidia chip"
+	echo "Cann't power off nVidia chip using vgaswitcheroo"
 	exit -1
 fi
