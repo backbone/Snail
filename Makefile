@@ -12,8 +12,10 @@ install:
 	install sbin/* ${DESTDIR}/${PREFIX}/sbin
 	if test x86_64 = `uname -m` ; then \
 		if test -d /usr/lib32 ; then \
+			install -d ${DESTDIR}/${PREFIX}/lib32; \
 			install lib32/*.so ${DESTDIR}/${PREFIX}/lib32; \
 		else \
+			install -d ${DESTDIR}/${PREFIX}/lib; \
 			install lib32/*.so ${DESTDIR}/${PREFIX}/lib; \
 		fi; \
 		if test -d /usr/lib64 ; then \
