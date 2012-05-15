@@ -250,6 +250,7 @@ case "$DISTRIB_ID" in
           cp -f $SNAIL_INIT_D_PATH/snail-watcher.systemd /etc/systemd/system/snail-watcher.service
           cp -f $SNAIL_INIT_D_PATH/snail-xserver.systemd /etc/systemd/system/snail-xserver.service
           systemctl --system daemon-reload
+          systemctl stop snail-watcher.service
           systemctl start snail-watcher.service
           systemctl enable snail-watcher.service
           ln -sf /usr/lib64/xorg/modules/libfb.so /usr/lib/snail/libfb.so
