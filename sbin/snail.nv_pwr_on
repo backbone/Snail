@@ -17,6 +17,8 @@ if [ -f /proc/acpi/bbswitch ]; then
 		echo "tries left: $tries"
 	done
 
+	echo "Cann't power on nVidia chip"
+	exit -1
 fi
 
 # Trying acpi_call method
@@ -109,6 +111,9 @@ if [ -f /proc/acpi/call ]; then
 		let tries--
 		echo "tries left: $tries"
 	done
+
+	echo "Cann't power on nVidia chip"
+	exit -1
 fi
 
 # Trying vgaswitcheroo method
@@ -123,7 +128,7 @@ if [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
 		let tries--
 		echo "tries left: $tries"
 	done
-fi
 
-echo "Cann't power on nVidia chip"
-exit -1
+	echo "Cann't power on nVidia chip"
+	exit -1
+fi
