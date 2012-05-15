@@ -11,6 +11,7 @@ elif [ -f /sys/kernel/debug/vgaswitcheroo/switch ]; then
     echo "vgaswitcheroo is OK! ;-)"
 else
       echo "No bbswitch/acpi_call/vgaswitcheroo found. Please configure/install one of them! ;-("
+      echo "Also You can run 'snail.configure' manually when the problem is resolved."
       exit -1
 fi
 
@@ -21,6 +22,7 @@ if [ 0 -eq $? ]; then
 else
   echo "Test failed ;-("
   echo "Probably you need to install standart nVidia driver or make a bug report..."
+  echo "Also You can run 'snail.configure' manually when the problem is resolved."
   exit -1
 fi
 
@@ -29,7 +31,7 @@ which dmidecode &>/dev/null
 if [ 0 -eq $? ]; then
   echo "dmidecode utility is OK! ;-)"
 else
-  echo "Please install dmidecode and run the script again."
+  echo "Please install dmidecode and run the 'snail.configure' script again."
   exit -1
 fi
 
