@@ -2,7 +2,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
-TIMEOUT=2           # wait timeout for X server start
+TIMEOUT=8           # wait timeout for X server start
 let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 
 LOCK_FILE=/tmp/.snail.lock
