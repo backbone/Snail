@@ -16,7 +16,7 @@ else
 fi
 
 echo "Test for nVidia driver"
-modinfo nvidia &>/dev/null
+modinfo nvidia &>/dev/null || modinfo nvidia-current &>/dev/null
 if [ 0 -eq $? ]; then
   echo "nVidia kernel module found! ;-)"
 else
