@@ -115,7 +115,7 @@ case "$DISTRIB_ID" in
 
     eselect opengl set xorg-x11
     for arch in 32bit 64bit; do
-      for chip in i915 i965 r300 r600 sw; do
+      for chip in i915 i965 sw; do
         eselect mesa set $arch $chip classic &>/dev/null;
       done;
     done
