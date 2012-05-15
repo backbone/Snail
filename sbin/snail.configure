@@ -16,11 +16,11 @@ else
 fi
 
 echo "Test for nVidia driver"
-snail.nv_pwr_on && snail.nv_pwr_off
+modinfo nvidia &>/dev/null
 if [ 0 -eq $? ]; then
-  echo "nVidia driver is OK! ;-)"
+  echo "nVidia kernel module found! ;-)"
 else
-  echo "Test failed ;-("
+  echo "nVidia kernel module not found ;-("
   echo "Probably you need to install standart nVidia driver or make a bug report..."
   echo "Also You can run 'snail.configure' manually when the problem is resolved."
   exit -1
