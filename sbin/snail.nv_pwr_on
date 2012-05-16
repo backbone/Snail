@@ -14,7 +14,7 @@ fi
 
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
-	model=`dmidecode $@ -s system-product-name`
+	model=`dmidecode $@ -s system-product-name` # FIXME: baseboard-product-name ?
 	case "$model" in
 		M11XR2)
 			echo '\_SB.PCI0.P0P2.PEGP._PS0' > /proc/acpi/call
