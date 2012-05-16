@@ -14,7 +14,7 @@ fi
 
 # Trying acpi_call method
 if [ -f /proc/acpi/call ]; then
-	model=`dmidecode -s system-product-name` # FIXME: baseboard-product-name ?
+	model=`dmidecode -s system-product-name`
 	case "$model" in
 		M11XR2)
 			echo '\_SB.PCI0.P0P2.PEGP._PS0' > /proc/acpi/call
@@ -59,7 +59,7 @@ if [ -f /proc/acpi/call ]; then
 			echo '\_SB.PCI0.PEG.VID._ON' > /proc/acpi/call \
 			&& echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call
 		;;
-		ThinkPadT420)
+		ThinkPadT420|41786VU)
 			echo '\_SB.PCI0.PEG.VID._PS0' > /proc/acpi/call
 		;;
 		*) echo "Snail (acpi_call method): unknown Notebook model: $model"; exit -1
