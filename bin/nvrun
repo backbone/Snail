@@ -3,7 +3,6 @@
 PATH=/usr/local/sbin:/usr/local/bin:$PATH
 
 TIMEOUT=8           # wait timeout for X server start
-let INTEL_IF_FAIL=1 # run on Intel if nVidia fails
 
 LOCK_FILE=/tmp/.snail.lock
 FIFO_FILE=/tmp/.snail.fifo
@@ -16,19 +15,17 @@ FIFO_FILE=/tmp/.snail.fifo
   fi
 
   if [ 0 -eq $? ]; then
-    echo "Running $@ on nVidia"
+    echo "Trying to run $@ on nVidia"
     export LD_LIBRARY_PATH=/usr/lib/snail
     LD_PRELOAD="/usr/lib/snail/lib32/libGL.so.1 \
                 /usr/lib/snail/lib32/libnvidia-tls.so \
                 /usr/lib/snail/lib32/libnvidia-glcore.so" \
-    snail.vglrun -d :8293 "$@" 2>/dev/null
-    echo "Application $@ was performed on nVidia"
+    snail.vglrun -d :8293 "$@" 2>/dev/null \
+    && echo "Application $@ was performed on nVidia ;-)"
+    || echo "Snail-daemon said that it has powered on nVidia but $@ fails to run for some reason ;-("
 
-  elif [ 0 -ne $INTEL_IF_FAIL ]; then
-    echo "Failed to run $@ on nVidia ;-("
-    # echo "Running $@ on Intel"
-    # "$@"
-    # echo "Application $@ was performed on Intel"
+  else
+    echo "Timout received for 'power on' request to Snail-daemon ;-("
   fi
 
   flock -u 9
