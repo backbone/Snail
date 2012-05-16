@@ -20,6 +20,7 @@ LICENSE="GPL-3"
 IUSE=""
 
 DEPEND="x11-drivers/nvidia-drivers
+        sys-power/bbswitch
         sys-apps/dmidecode"
 
 RDEPEND="${DEPEND}"
