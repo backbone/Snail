@@ -20,6 +20,15 @@ FIFO_FILE=/tmp/.snail.fifo
 
 $XSERVER_STOP_CMD && snail.nv_pwr_off # stop X service
 
+sigterm ()
+{
+  rm -f $LOCK_FILE
+  rm -f $FIFO_FILE
+  exit 0
+}
+
+trap sigterm SIGTERM
+
 touch $LOCK_FILE && chown root:video $LOCK_FILE && chmod 660 $LOCK_FILE # create lock file
 rm -f $FIFO_FILE && mkfifo --mode 660 $FIFO_FILE && chgrp video $FIFO_FILE # create fifo
 
