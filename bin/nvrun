@@ -7,7 +7,7 @@ TIMEOUT=8           # wait timeout for X server start
 LOCK_FILE=/tmp/.snail.lock
 FIFO_FILE=/tmp/.snail.fifo
 
-[ ! -f $LOCK_FILE ] && echo "Snail daemon is not running. Please start." && exit -1
+[ ! -f $LOCK_FILE ] && echo "Snail daemon is not running. Please start it." && exit -1
 
 {
   flock -w 0 -s 9
