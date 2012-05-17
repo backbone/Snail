@@ -25,8 +25,8 @@ FIFO_FILE=/tmp/.snail.fifo
     snail.vglrun -d :8293 "$@" 2>/dev/null \
     && echo "Application $@ was performed on nVidia ;-)" && exit 0
     
-    echo "Snail-daemon said that it has powered on nVidia but $@ fails to run for some reason ;-("
-    echo "Here is nVidia X-server error log:" ; grep '] (EE) ' /var/log/Xorg.8293.log
+    echo "nvrun $@ returns an error. Here is nVidia X-server error log:"
+    grep '] (EE) ' /var/log/Xorg.8293.log
 
   else
     echo "Timout received for 'power on' request to Snail-daemon ;-("
