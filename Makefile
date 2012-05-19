@@ -28,15 +28,12 @@ install:
 		if test ! -d /usr/lib ; then \
 			ln -sf lib64 /usr/lib; \
 		fi; \
-		install -d ${DESTDIR}/${PREFIX}/lib/snail; \
 		install -d ${DESTDIR}/${PREFIX}/lib/snail/lib32; \
 	else \
 		install -d ${DESTDIR}/${PREFIX}/lib; \
 		install lib32/*.so ${DESTDIR}/${PREFIX}/lib; \
 		install -d ${DESTDIR}/${PREFIX}/lib/snail; \
 	fi; \
-	install -d ${DESTDIR}/${PREFIX}/share; \
-	install -d ${DESTDIR}/${PREFIX}/share/snail; \
 	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d; \
 	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d
 
