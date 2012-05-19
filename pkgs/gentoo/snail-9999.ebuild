@@ -17,8 +17,6 @@ fi
 
 DESCRIPTION="Snail - nVidia Optimus support"
 
-SRC_URI="ftp://backbone.ws/projects/snail/${P}.tar.bz2"
-
 HOMEPAGE="https://chili.backbone.ws/projects/snail"
 
 SLOT="0"
