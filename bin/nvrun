@@ -10,7 +10,7 @@ FIFO_FILE=/tmp/.snail.fifo
 [ ! -f $LOCK_FILE ] && echo "Snail daemon is not running. Please start it." && exit -1
 
 {
-  flock -w 0 -s 9
+  flock -w 1 -s 9
   if [ 0 -ne $? ]; then
     (nohup echo -n > $FIFO_FILE &>/dev/null)&
     flock -w $TIMEOUT -s 9
