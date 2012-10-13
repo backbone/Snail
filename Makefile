@@ -35,7 +35,14 @@ install:
 		install -d ${DESTDIR}/${PREFIX}/lib/snail; \
 	fi; \
 	install -d ${DESTDIR}/${PREFIX}/share/snail/init.d; \
-	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d
+	install share/init.d/* ${DESTDIR}/${PREFIX}/share/snail/init.d ; \
+	if test -d /lib/modules/`uname -r` ; then \
+		mkdir -p ${DESTDIR}/lib/modules/`uname -r`/video \
+		touch ${DESTDIR}/lib/modules/`uname -r`/video/snail_autorebuild ; \
+	elif test -d /lib64/modules/`uname -r` ; then \
+		mkdir -p ${DESTDIR}/lib64/modules/`uname -r`/video \
+		touch ${DESTDIR}/lib64/modules/`uname -r`/video/snail_autorebuild ; \
+	fi
 
 uninstall:
 	rm -f ${DESTDIR}/etc/X11/xorg.conf.*.snail
